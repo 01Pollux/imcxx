@@ -11,7 +11,7 @@ namespace imcxx
 	/// - If you stop calling BeginDragDropSource() the payload is preserved however it won't have a preview tooltip (we currently display a fallback "..." tooltip, see #1725)
 	/// - An item can be both drag source and drop target.
 	/// </summary>
-	class drag_drop_source : public scope_wrap<drag_drop_source>
+	class [[nodiscard]] drag_drop_source : public scope_wrap<drag_drop_source>
 	{
 		friend class scope_wrap;
 	public:
@@ -65,7 +65,7 @@ namespace imcxx
 	/// - If you stop calling BeginDragDropSource() the payload is preserved however it won't have a preview tooltip (we currently display a fallback "..." tooltip, see #1725)
 	/// - An item can be both drag source and drop target.
 	/// </summary>
-	class drag_drop_target : public scope_wrap<drag_drop_target>
+	class [[nodiscard]] drag_drop_target : public scope_wrap<drag_drop_target>
 	{
 		friend class scope_wrap;
 	public:

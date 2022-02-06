@@ -8,7 +8,7 @@ namespace imcxx
 	/// Widgets: Trees
 	/// - TreeNode functions return true when the node is open, in which case you need to also call TreePop() when you are finished displaying the tree node contents.
 	/// </summary>
-	class tree_node : public scope_wrap<tree_node>
+	class [[nodiscard]] tree_node : public scope_wrap<tree_node>
 	{
 		friend class scope_wrap;
 	public:

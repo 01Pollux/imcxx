@@ -9,7 +9,7 @@ namespace imcxx
 	/// Tooltips
 	/// - Tooltip are windows following the mouse. They do not take focus away.
 	/// </summary>
-	class tooltip : public scope_wrap<tooltip, scope_traits::always_dtor, false>
+	class [[nodiscard]] tooltip : public scope_wrap<tooltip, scope_traits::always_dtor, false>
 	{
 		friend class scope_wrap;
 	public:

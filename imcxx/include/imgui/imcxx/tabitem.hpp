@@ -8,7 +8,7 @@ namespace imcxx
 	/// Tab Bars, Tabs
 	/// Note: Tabs are automatically created by the docking system. Use this to create tab bars/tabs yourself without docking being involved.
 	/// </summary>
-	class tabbar : public scope_wrap<tabbar>
+	class [[nodiscard]] tabbar : public scope_wrap<tabbar>
 	{
 		friend class scope_wrap;
 	public:

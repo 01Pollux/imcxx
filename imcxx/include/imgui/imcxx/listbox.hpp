@@ -12,7 +12,7 @@ namespace imcxx
 	/// - Choose frame width:   size.x > 0.0f: custom  /  size.x < 0.0f or -FLT_MIN: right-align   /  size.x = 0.0f (default): use current ItemWidth
 	/// - Choose frame height:  size.y > 0.0f: custom  /  size.y < 0.0f or -FLT_MIN: bottom-align  /  size.y = 0.0f (default): arbitrary default height which can fit ~7 items
 	/// </summary>
-	class list_box : public scope_wrap<list_box>
+	class [[nodiscard]] list_box : public scope_wrap<list_box>
 	{
 		friend class scope_wrap;
 	public:

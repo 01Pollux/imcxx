@@ -31,7 +31,7 @@ namespace imcxx
 	///        --------------------------------------------------------------------------------------------------------
 	/// - 5. Call EndTable()
 	/// </summary>
-	class table : public scope_wrap<table>
+	class [[nodiscard]] table : public scope_wrap<table>
 	{
 		friend class scope_wrap;
 	public:
@@ -191,7 +191,7 @@ namespace imcxx
 		}
 	};
 
-	class table::column
+	class [[nodiscard]] table::column
 	{
 	public:
 		column(int column) noexcept : m_Column(column) 

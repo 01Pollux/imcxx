@@ -7,7 +7,7 @@ namespace imcxx
 	/// <summary>
 	/// start a new Dear ImGui frame, you can submit any command from this point until Render()/EndFrame().
 	/// </summary>
-	class frame : public scope_wrap<frame, scope_traits::always_dtor, false>
+	class [[nodiscard]] frame : public scope_wrap<frame, scope_traits::always_dtor, false>
 	{
 		friend class scope_wrap;
 	public:
