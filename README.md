@@ -1,5 +1,5 @@
 # imcxx
-+ C++17 wrapper around ImGui
+\+ C++17 wrapper around ImGui
 
 # RAII scopes
 with RAII, it will be easier to call some secondary functions like `Begin()` and `End()` or `BeginCombo()` and `EndCombo()` at the right time.
