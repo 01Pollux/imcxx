@@ -24,7 +24,7 @@ namespace imcxx
 		static constexpr bool has_dtor = traits_value != scope_traits::no_dtor;
 		static constexpr bool has_return = _HasReturn;
 
-		explicit scope_wrap(bool res = false) noexcept :
+		explicit scope_wrap(bool res = true) noexcept :
 			m_Result(res)
 		{}
 
