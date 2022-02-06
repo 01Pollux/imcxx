@@ -52,3 +52,4 @@ Move the return value from the original object to the new one, and invalidate it
 
 # Notes:
 Credits to `ocornut` for [ImGui](https://github.com/ocornut/imgui/tree/docking)
+More examples can be under `test/*/main.cpp` and `include/imgui/imgui_demo.cpp` (Not completed yet)
