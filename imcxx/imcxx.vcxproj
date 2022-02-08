@@ -171,6 +171,7 @@
     <ClInclude Include="include\imgui\imcxx\menuitem.hpp" />
     <ClInclude Include="include\imgui\imcxx\nodes.hpp" />
     <ClInclude Include="include\imgui\imcxx\override.hpp" />
+    <ClInclude Include="include\imgui\imcxx\popup.hpp" />
     <ClInclude Include="include\imgui\imcxx\scopes.hpp" />
     <ClInclude Include="include\imgui\imcxx\slider.hpp" />
     <ClInclude Include="include\imgui\imcxx\tabitem.hpp" />

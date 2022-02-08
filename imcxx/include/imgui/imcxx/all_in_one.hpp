@@ -18,4 +18,5 @@
 #include "drag_drop.hpp"
 #include "disabled.hpp"
 #include "nodes.hpp"
+#include "popup.hpp"
 #include "layout.hpp"

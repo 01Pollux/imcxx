@@ -21,59 +21,37 @@ namespace imcxx
 		struct bullet {};	
 		struct color {};
 
-		button(const char* label, const ImVec2& size = {}) :
-			scope_wrap(ImGui::Button(label, size))
-		{}
-
-		button(std::string_view label, const ImVec2& size = {}) :
-			button(label.data(), size)
+		template<typename _StrTy>
+		button(const _StrTy& label, const ImVec2& size = {}) :
+			scope_wrap(ImGui::Button(impl::get_string(label), size))
 		{}
 
 
 		/// <summary>
 		/// button with FramePadding=(0,0) to easily embed within text
 		/// </summary>
-		button(small, const char* label) :
-			scope_wrap(ImGui::SmallButton(label))
-		{}
-
-		/// <summary>
-		/// button with FramePadding=(0,0) to easily embed within text
-		/// </summary>
-		button(small, std::string_view label) :
-			button(small{}, label.data())
+		template<typename _StrTy>
+		button(small, const _StrTy& label) :
+			scope_wrap(ImGui::SmallButton(impl::get_string(label)))
 		{}
 
 		
 		/// <summary>
 		/// flexible button behavior without the visuals, frequently useful to build custom behaviors using the public api (along with IsItemActive, IsItemHovered, etc.)
 		/// </summary>
-		button(invisible, const char* label, const ImVec2& size = {}, ImGuiButtonFlags flags = 0) :
-			scope_wrap(ImGui::InvisibleButton(label, size, flags))
-		{}
-
-		/// <summary>
-		/// flexible button behavior without the visuals, frequently useful to build custom behaviors using the public api (along with IsItemActive, IsItemHovered, etc.)
-		/// </summary>
-		button(invisible, std::string_view label, const ImVec2& size = {}, ImGuiButtonFlags flags = 0) :
-			button(invisible{}, label.data(), size, flags)
+		template<typename _StrTy>
+		button(invisible, const _StrTy& label, const ImVec2& size = {}, ImGuiButtonFlags flags = 0) :
+			scope_wrap(ImGui::InvisibleButton(impl::get_string(label), size, flags))
 		{}
 
 
 		/// <summary>
 		/// square button with an arrow shape
 		/// </summary>
-		button(arrow, const char* label, ImGuiDir direction) :
-			scope_wrap(ImGui::ArrowButton(label, direction))
+		template<typename _StrTy>
+		button(arrow, const _StrTy& label, ImGuiDir direction) :
+			scope_wrap(ImGui::ArrowButton(impl::get_string(label), direction))
 		{}
-
-		/// <summary>
-		/// square button with an arrow shape
-		/// </summary>
-		button(arrow, std::string_view label, ImGuiDir direction) :
-			button(arrow{}, label.data(), direction)
-		{}
-
 
 		/// <summary>
 		/// <0 frame_padding uses default frame padding settings. 0 for no padding
@@ -95,31 +73,18 @@ namespace imcxx
 		/// <summary>
 		/// use with e.g. if (RadioButton("one", my_value==1)) { my_value = 1; }
 		/// </summary>
-		button(radio, const char* label, bool active) :
-			scope_wrap(ImGui::RadioButton(label, active))
-		{}
-
-		/// <summary>
-		/// square button with an arrow shape
-		/// </summary>
-		button(radio, std::string_view label, bool active) :
-			button(radio{}, label.data(), active)
+		template<typename _StrTy>
+		button(radio, const _StrTy& label, bool active) :
+			scope_wrap(ImGui::RadioButton(impl::get_string(label), active))
 		{}
 
 		/// <summary>
 		/// shortcut to handle the above pattern when value is an integer
 		/// </summary>
-		button(radio, const char* label, int* value, int pos) :
-			scope_wrap(ImGui::RadioButton(label, value, pos))
+		template<typename _StrTy>
+		button(radio, const _StrTy& label, int* value, int pos) :
+			scope_wrap(ImGui::RadioButton(impl::get_string(label), value, pos))
 		{}
-
-		/// <summary>
-		/// shortcut to handle the above pattern when value is an integer
-		/// </summary>
-		button(radio, std::string_view label, int* value, int pos) :
-			button(radio{}, label.data(), value, pos)
-		{}
-
 
 		/// <summary>
 		/// draw a small circle + keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses
@@ -149,15 +114,9 @@ namespace imcxx
 		/// <summary>
 		/// display a color square/button, hover for details, return true when pressed
 		/// </summary>
-		button(color, const char* desc_id, const ImVec4& col, ImGuiColorEditFlags flags = 0, ImVec2 size = { }) :
-			scope_wrap(ImGui::ColorButton(desc_id, col, flags, size))
-		{}
-
-		/// <summary>
-		/// display a color square/button, hover for details, return true when pressed
-		/// </summary>
-		button(color, std::string_view desc_id, const ImVec4& col, ImGuiColorEditFlags flags = 0, ImVec2 size = { }) :
-			button(color{}, desc_id.data(), col, flags, size)
+		template<typename _StrTy>
+		button(color, const _StrTy& desc_id, const ImVec4& col, ImGuiColorEditFlags flags = 0, ImVec2 size = { }) :
+			scope_wrap(ImGui::ColorButton(impl::get_string(desc_id), col, flags, size))
 		{}
 	};
 }

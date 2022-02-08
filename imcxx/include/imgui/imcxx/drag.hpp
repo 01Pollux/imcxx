@@ -35,28 +35,25 @@ namespace imcxx
 		/// </summary>
 		using auto_array = array<0>;
 
-		template<typename T>
-		static constexpr const char* default_c_format = "";
-
 		/// <summary>
 		/// Calls 'ImGui::DragScalar'
 		/// </summary>
-		template<typename _Ty>
+		template<typename _StrTy, typename _Ty>
 		drag(
-			const char* label, 
+			const _StrTy& label,
 			_Ty* v,
 			float speed = 1.f,
 			_Ty v_min = (std::numeric_limits<_Ty>::min)(), 
 			_Ty v_max = (std::numeric_limits<_Ty>::max)(),
-			const char* format = default_c_format<_Ty>, 
+			const char* format = impl::default_c_format<_Ty>, 
 			ImGuiSliderFlags flags = 0
 		)
 		{
-			static constexpr ImGuiDataType type = get_type<_Ty>();
+			static constexpr ImGuiDataType type = impl::to_imdatatype<_Ty>();
 			static_assert(type != ImGuiDataType_COUNT, "Invalid type was passed to 'ImGui::DragScalar()'");
 #if _HAS_CXX20
 			m_Result._Value = ImGui::DragScalar(
-				label,
+				impl::get_string(label),
 				type,
 				std::bit_cast<void*>(v),
 				speed,
@@ -67,7 +64,7 @@ namespace imcxx
 			);
 #else
 			m_Result._Value = ImGui::DragScalar(
-				label,
+				impl::get_string(label),
 				type,
 				reinterpret_cast<void*>(v),
 				speed,
@@ -82,14 +79,14 @@ namespace imcxx
 		/// <summary>
 		/// Calls 'ImGui::DragScalar'
 		/// </summary>
-		template<typename _Ty, typename = std::enable_if_t<!std::is_array_v<_Ty>>>
+		template<typename _StrTy, typename _Ty, typename = std::enable_if_t<!std::is_array_v<_Ty>>>
 		drag(
-			const char* label,
+			const _StrTy& label,
 			_Ty& v,
 			float speed = 1.f,
 			_Ty v_min = (std::numeric_limits<_Ty>::min)(),
 			_Ty v_max = (std::numeric_limits<_Ty>::max)(),
-			const char* format = default_c_format<_Ty>,
+			const char* format = impl::default_c_format<_Ty>,
 			ImGuiSliderFlags flags = 0
 		) :
 			drag(label, &v, speed, v_min, v_max, format, flags)
@@ -99,24 +96,24 @@ namespace imcxx
 		/// <summary>
 		/// Calls 'ImGui::DragScalarN' with a smaller or equal to array size 'v', where v is contiguous-pointer
 		/// </summary>
-		template<typename _Ty>
+		template<typename _StrTy, typename _Ty>
 		drag(
 			pointer,
-			const char* label,
+			const _StrTy& label,
 			_Ty* v,
 			size_t size,
 			float speed = 1.f,
 			_Ty v_min = (std::numeric_limits<_Ty>::min)(),
 			_Ty v_max = (std::numeric_limits<_Ty>::max)(),
-			const char* format = default_c_format<_Ty>, 
+			const char* format = impl::default_c_format<_Ty>, 
 			ImGuiSliderFlags flags = 0
 		)
 		{
-			static constexpr ImGuiDataType type = get_type<_Ty>();
+			static constexpr ImGuiDataType type = impl::to_imdatatype<_Ty>();
 			static_assert(type != ImGuiDataType_COUNT, "Invalid type was passed to 'ImGui::DragScalarN()'");
 #if _HAS_CXX20
 			m_Result._Value = ImGui::DragScalarN(
-				label,
+				impl::get_string(label),
 				type,
 				std::bit_cast<void*>(v),
 				size,
@@ -128,7 +125,7 @@ namespace imcxx
 			);
 #else
 			m_Result._Value = ImGui::DragScalarN(
-				label,
+				impl::get_string(label),
 				type,
 				reinterpret_cast<void*>(v), 
 				size,
@@ -144,24 +141,24 @@ namespace imcxx
 		/// <summary>
 		/// Calls 'ImGui::DragScalarN' with a smaller or equal to array size 'v'
 		/// </summary>
-		template<size_t _ViewSize, typename _Ty, size_t _Size>
+		template<size_t _ViewSize, typename _StrTy, typename _Ty, size_t _Size>
 		drag(
 			array<_ViewSize> arr_size,
-			const char* label, 
+			const _StrTy& label,
 			std::array<_Ty, _Size>* v, 
 			float speed = 1.f,
 			_Ty v_min = (std::numeric_limits<_Ty>::min)(),
 			_Ty v_max = (std::numeric_limits<_Ty>::max)(), 
-			const char* format = default_c_format<_Ty>,
+			const char* format = impl::default_c_format<_Ty>,
 			ImGuiSliderFlags flags = 0
 		)
 		{
-			static constexpr ImGuiDataType type = get_type<_Ty>();
+			static constexpr ImGuiDataType type = impl::to_imdatatype<_Ty>();
 			static_assert(type != ImGuiDataType_COUNT, "Invalid type was passed to 'ImGui::DragScalarN()'");
 			static constexpr size_t size = _ViewSize ? _ViewSize : _Size;
 #if _HAS_CXX20
 			m_Result._Value = ImGui::DragScalarN(
-				label,
+				impl::get_string(label),
 				type,
 				std::bit_cast<void*>(v->data()),
 				size,
@@ -173,7 +170,7 @@ namespace imcxx
 			);
 #else
 			m_Result._Value = ImGui::DragScalarN(
-				label,
+				impl::get_string(label),
 				type,
 				reinterpret_cast<void*>(v->data()),
 				size,
@@ -189,24 +186,24 @@ namespace imcxx
 		/// <summary>
 		/// Calls 'ImGui::DragScalarN' with a smaller or equal to array size 'v'
 		/// </summary>
-		template<size_t _ViewSize, typename _Ty, size_t _Size>
+		template<size_t _ViewSize, typename _StrTy, typename _Ty, size_t _Size>
 		drag(
 			array<_ViewSize> arr_size, 
-			const char* label, 
+			const _StrTy& label,
 			_Ty(&v)[_Size], 
 			float speed = 1.f,
 			_Ty v_min = (std::numeric_limits<_Ty>::min)(),
 			_Ty v_max = (std::numeric_limits<_Ty>::max)(),
-			const char* format = default_c_format<_Ty>,
+			const char* format = impl::default_c_format<_Ty>,
 			ImGuiSliderFlags flags = 0
 		)
 		{
-			static constexpr ImGuiDataType type = get_type<_Ty>();
+			static constexpr ImGuiDataType type = impl::to_imdatatype<_Ty>();
 			static_assert(type != ImGuiDataType_COUNT, "Invalid type was passed to 'ImGui::DragScalarN()'");
 			static constexpr size_t size = _ViewSize ? _ViewSize : _Size;
 #if _HAS_CXX20
 			m_Result._Value = ImGui::DragScalarN(
-				label,
+				impl::get_string(label),
 				type,
 				std::bit_cast<void*>(static_cast<_Ty*>(v)),
 				size,
@@ -218,7 +215,7 @@ namespace imcxx
 			);
 #else
 			m_Result._Value = ImGui::DragScalarN(
-				label,
+				impl::get_string(label),
 				type,
 				reinterpret_cast<void*>(v),
 				size,
@@ -234,15 +231,15 @@ namespace imcxx
 		/// <summary>
 		/// Calls 'ImGui::DragScalarN' with a smaller or equal to array size 'v'
 		/// </summary>
-		template<size_t _ViewSize, typename _Ty, size_t _Size>
+		template<size_t _ViewSize, typename _StrTy, typename _Ty, size_t _Size>
 		drag(
 			array<_ViewSize> arr_size,
-			const char* label,
+			const _StrTy& label,
 			std::array<_Ty, _Size>& v, 
 			float speed = 1.f,
 			_Ty v_min = (std::numeric_limits<_Ty>::min)(),
 			_Ty v_max = (std::numeric_limits<_Ty>::max)(),
-			const char* format = default_c_format<_Ty>, 
+			const char* format = impl::default_c_format<_Ty>, 
 			ImGuiSliderFlags flags = 0
 		) :
 			drag(arr_size, label, &v, speed, v_min, v_max, format, flags)
@@ -252,10 +249,10 @@ namespace imcxx
 		/// <summary>
 		/// Calls 'ImGui::DragScalarN' with a smaller or equal to array size 'v', overload for 'ImVec2'
 		/// </summary>
-		template<size_t _ViewSize>
+		template<size_t _ViewSize, typename _StrTy>
 		drag(
 			array<_ViewSize> arr_size,
-			const char* label,
+			const _StrTy& label,
 			ImVec2* v, 
 			float speed = 1.f,
 			float v_min = (std::numeric_limits<float>::min)(),
@@ -274,10 +271,10 @@ namespace imcxx
 		/// <summary>
 		/// Calls 'ImGui::DragScalarN' with a smaller or equal to array size 'v', overload for 'ImVec2'
 		/// </summary>
-		template<size_t _ViewSize>
+		template<size_t _ViewSize, typename _StrTy>
 		drag(
 			array<_ViewSize> arr_size,
-			const char* label,
+			const _StrTy& label,
 			ImVec2& v,
 			float speed = 1.f,
 			float v_min = (std::numeric_limits<float>::min)(),
@@ -292,10 +289,10 @@ namespace imcxx
 		/// <summary>
 		/// Calls 'ImGui::DragScalarN' with a smaller or equal to array size 'v', overload for 'ImVec4'
 		/// </summary>
-		template<size_t _ViewSize>
+		template<size_t _ViewSize, typename _StrTy>
 		drag(
 			array<_ViewSize> arr_size,
-			const char* label, 
+			const _StrTy& label,
 			ImVec4* v,
 			float speed = 1.f,
 			float v_min = (std::numeric_limits<float>::min)(),
@@ -313,10 +310,10 @@ namespace imcxx
 		/// <summary>
 		/// Calls 'ImGui::DragScalarN' with a smaller or equal to array size 'v', overload for 'ImVec4'
 		/// </summary>
-		template<size_t _ViewSize>
+		template<size_t _ViewSize, typename _StrTy>
 		drag(
 			array<_ViewSize> arr_size,
-			const char* label,
+			const _StrTy& label,
 			ImVec4& v,
 			float speed = 1.f,
 			float v_min = (std::numeric_limits<float>::min)(),
@@ -326,61 +323,5 @@ namespace imcxx
 		) :
 			drag(arr_size, label, &v, speed, v_min, v_max, format, flags)
 		{}
-
-	private:
-		template<typename _Ty>
-		static constexpr ImGuiDataType get_type() noexcept
-		{
-			if constexpr (std::is_same_v<_Ty, char>)
-				return ImGuiDataType_S8;
-			else if constexpr (std::is_same_v<_Ty, uint8_t>)
-				return ImGuiDataType_U8;
-			else if constexpr (std::is_same_v<_Ty, int16_t>)
-				return ImGuiDataType_S16;
-			else if constexpr (std::is_same_v<_Ty, uint16_t>)
-				return ImGuiDataType_U16;
-			else if constexpr (std::is_same_v<_Ty, int32_t>)
-				return ImGuiDataType_S32;
-			else if constexpr (std::is_same_v<_Ty, uint32_t>)
-				return ImGuiDataType_U32;
-			else if constexpr (std::is_same_v<_Ty, int64_t>)
-				return ImGuiDataType_S64;
-			else if constexpr (std::is_same_v<_Ty, uint64_t>)
-				return ImGuiDataType_U64;
-			else if constexpr (std::is_same_v<_Ty, float>)
-				return ImGuiDataType_Float;
-			else if constexpr (std::is_same_v<_Ty, double>)
-				return ImGuiDataType_Double;
-			else return ImGuiDataType_COUNT;
-		}
 	};
-
-
-	template<>
-	constexpr const char* drag::default_c_format<char> = "%d";
-	template<>
-	constexpr const char* drag::default_c_format<uint8_t> = "%u";
-	template<>
-	constexpr const char* drag::default_c_format<int16_t> = "%d";
-	template<>
-	constexpr const char* drag::default_c_format<uint16_t> = "%u";
-	template<>
-	constexpr const char* drag::default_c_format<int32_t> = "%d";
-	template<>
-	constexpr const char* drag::default_c_format<uint32_t> = "%u";
-#ifdef _MSC_VER
-	template<>
-	constexpr const char* drag::default_c_format<int64_t> = "%I64d";
-	template<>
-	constexpr const char* drag::default_c_format<uint64_t> = "%I64u";
-#else
-	template<>
-	constexpr const char* drag::default_c_format<int64_t> = "%lld";
-	template<>
-	constexpr const char* drag::default_c_format<uint64_t> = "%llu";
-#endif
-	template<>
-	constexpr const char* drag::default_c_format<float> = "%.3f";
-	template<>
-	constexpr const char* drag::default_c_format<double> = "%.6lf";
 }

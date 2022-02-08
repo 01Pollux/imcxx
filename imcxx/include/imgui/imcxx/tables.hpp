@@ -37,12 +37,9 @@ namespace imcxx
 	public:
 		class column;
 
-		table(const char* name, int column, ImGuiTableFlags flags = 0, const ImVec2& outer_size = {}, float inner_width = 0.0f) :
-			scope_wrap(ImGui::BeginTable(name, column, flags, outer_size, inner_width))
-		{}
-
-		table(std::string_view name, int column, ImGuiTableFlags flags = 0, const ImVec2& outer_size = {}, float inner_width = 0.0f) :
-			table(name.data(), column, flags, outer_size, inner_width)
+		template<typename _StrTy>
+		table(const _StrTy& name, int column, ImGuiTableFlags flags = 0, const ImVec2& outer_size = {}, float inner_width = 0.0f) :
+			scope_wrap(ImGui::BeginTable(impl::get_string(name), column, flags, outer_size, inner_width))
 		{}
 
 		struct setup_no_row {};
@@ -174,12 +171,10 @@ namespace imcxx
 		template<typename _Ty, typename ..._Args>
 		void table_setup_impl(const _Ty& arg, const _Args&... rest)
 		{
-			if constexpr (std::is_same_v<const char*, _Ty> || std::is_same_v<const char*, std::decay_t<_Ty>>)
-				ImGui::TableSetupColumn(arg);
-			else if constexpr (std::is_same_v<std::string_view, _Ty> || std::is_same_v<std::string, std::decay_t<_Ty>>)
-				ImGui::TableSetupColumn(arg.data());
-			else if constexpr (std::is_same_v<setup_info, _Ty>)
+			if constexpr (std::is_same_v<setup_info, _Ty>)
 				ImGui::TableSetupColumn(arg.label, arg.flags, arg.init_width_or_weight, arg.user_id);
+			else
+				ImGui::TableSetupColumn(impl::get_string(arg));
 
 			if constexpr (sizeof...(_Args) > 0)
 				table_setup_impl(rest...);

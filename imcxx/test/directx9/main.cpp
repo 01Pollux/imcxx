@@ -147,15 +147,15 @@ int main(int, char**)
 
                     using namespace std::string_view_literals;
                     imcxx::text::call("This is some useful text");
-                    imcxx::checkbox::call("Demo Window", &show_demo_window);            // Edit bools storing our window open/close state
-                    imcxx::checkbox::call("Another Window", &show_another_window);
+                    imcxx::checkbox::call("Demo Window"sv, &show_demo_window);            // Edit bools storing our window open/close state
+                    imcxx::checkbox::call("Another Window"sv, &show_another_window);
 
                     imcxx::slider::call("float", &f, 0.f, 1.f);
                     // Edit 3 floats representing a color
                     imcxx::color::call(imcxx::color::edit{}, "clear color", clear_color);
 
                     // Buttons return true when clicked (most widgets return true when edited/activated)
-                    if (imcxx::button::call("Button"))
+                    if (imcxx::button::call("Button"sv))
                         counter++;
                     
                     ImGui::SameLine();

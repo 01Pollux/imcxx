@@ -14,38 +14,28 @@ namespace imcxx
 	public:
 		class item;
 
-		tabbar(const char* name, ImGuiTabBarFlags flags = 0) :
-			scope_wrap(ImGui::BeginTabBar(name, flags))
+		template<typename _StrTy>
+		tabbar(const _StrTy& name, ImGuiTabBarFlags flags = 0) :
+			scope_wrap(ImGui::BeginTabBar(impl::get_string(name), flags))
 		{}
 
-		tabbar(std::string_view name, ImGuiTabBarFlags flags = 0) :
-			tabbar(name.data(), flags)
-		{}
 
 		/// <summary>
 		/// create a Tab. Returns true if the Tab is selected.
 		/// </summary>
-		[[nodiscard]] item add_item(const char* label, bool* p_open = nullptr, ImGuiTabItemFlags flags = 0);
-
-		/// <summary>
-		/// create a Tab. Returns true if the Tab is selected.
-		/// </summary>
-		[[nodiscard]] item add_item(std::string_view label, bool* p_open = nullptr, ImGuiTabItemFlags flags = 0);
-
-		/// <summary>
-		/// create a Tab behaving like a button. return true when clicked. cannot be selected in the tab bar
-		/// </summary>
-		[[nodiscard]] bool add_button(const char* label, ImGuiTabItemFlags flags = 0)
+		template<typename _StrTy>
+		[[nodiscard]] item add_item(const _StrTy& label, bool* p_open = nullptr, ImGuiTabItemFlags flags = 0)
 		{
-			return ImGui::TabItemButton(label, flags);
+			return add_item_impl(impl::get_string(label), p_open, flags);
 		}
 
 		/// <summary>
 		/// create a Tab behaving like a button. return true when clicked. cannot be selected in the tab bar
 		/// </summary>
-		[[nodiscard]] bool add_button(std::string_view label, ImGuiTabItemFlags flags = 0)
+		template<typename _StrTy>
+		[[nodiscard]] bool add_button(const _StrTy& label, ImGuiTabItemFlags flags = 0)
 		{
-			return ImGui::TabItemButton(label.data(), flags);
+			return ImGui::TabItemButton(impl::get_string(label), flags);
 		}
 
 		/// <summary>
@@ -61,18 +51,17 @@ namespace imcxx
 		{
 			ImGui::EndTabBar();
 		}
+
+		item add_item_impl(const char* label, bool* p_open = nullptr, ImGuiTabItemFlags flags = 0);
 	};
 
 	class [[nodiscard]] tabbar::item : public scope_wrap<item>
 	{
 		friend class scope_wrap;
 	public:
-		item(const char* label, bool* p_open = nullptr, ImGuiTabItemFlags flags = 0) :
-			scope_wrap(ImGui::BeginTabItem(label, p_open, flags))
-		{}
-
-		item(std::string_view label, bool* p_open = nullptr, ImGuiTabItemFlags flags = 0) :
-			item(label.data(), p_open, flags)
+		template<typename _StrTy>
+		item(const _StrTy& label, bool* p_open = nullptr, ImGuiTabItemFlags flags = 0) :
+			scope_wrap(ImGui::BeginTabItem(impl::get_string(label), p_open, flags))
 		{}
 
 	private:
@@ -82,13 +71,8 @@ namespace imcxx
 		}
 	};
 
-	inline auto tabbar::add_item(const char* label, bool* p_open, ImGuiTabItemFlags flags) -> item
+	inline auto tabbar::add_item_impl(const char* label, bool* p_open, ImGuiTabItemFlags flags) -> item
 	{
 		return item{ label, p_open, flags };
-	}
-
-	inline auto tabbar::add_item(std::string_view label, bool* p_open, ImGuiTabItemFlags flags) -> item
-	{
-		return item{ label.data(), p_open, flags};
 	}
 }

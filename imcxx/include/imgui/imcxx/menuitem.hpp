@@ -34,35 +34,33 @@ namespace imcxx
 			scope_wrap(ImGui::BeginMainMenuBar()), m_IsMainBar(true)
 		{}
 
+
 		/// <summary>
 		/// create a sub-menu entry.
 		/// </summary>
-		[[nodiscard]] item add_item(const char* label, bool enabled = true);
-
-		/// <summary>
-		/// create a Tab. Returns true if the Tab is selected.
-		/// </summary>
-		[[nodiscard]] item add_item(std::string_view label, bool enabled = true);
-
+		template<typename _StrTy>
+		[[nodiscard]] item add_item(const _StrTy& label, bool enabled = true)
+		{
+			return add_item_impl(impl::get_string(label), enabled);
+		}
+		
 		/// <summary>
 		/// return true when activated.
 		/// </summary>
-		menuitem_entry add_entry(const char* label, const char* shortcut = nullptr, bool selected = false, bool enabled = true);
+		template<typename _Str0Ty, typename _Str1Ty = const char*>
+		menuitem_entry add_entry(const _Str0Ty& label, const _Str1Ty& shortcut = nullptr, bool selected = false, bool enabled = true)
+		{
+			return add_entry_impl(impl::get_string(label), impl::get_string(shortcut), selected, enabled);
+		}
 
 		/// <summary>
 		/// return true when activated + toggle (*p_selected) if p_selected != nullptr
 		/// </summary>
-		menuitem_entry add_entry(const char* label, const char* shortcut, bool* p_selected, bool enabled = true);
-
-		/// <summary>
-		/// return true when activated.
-		/// </summary>
-		menuitem_entry add_entry(std::string_view label, std::string_view shortcut = "", bool selected = false, bool enabled = true);
-
-		/// <summary>
-		/// return true when activated + toggle (*p_selected) if p_selected != nullptr
-		/// </summary>
-		menuitem_entry add_entry(std::string_view label, std::string_view shortcut, bool* p_selected, bool enabled = true);
+		template<typename _Str0Ty, typename _Str1Ty = const char*>
+		menuitem_entry add_entry(const _Str0Ty& label, const _Str1Ty& shortcut, bool* p_selected, bool enabled = true)
+		{
+			return add_entry_impl(impl::get_string(label), impl::get_string(shortcut), p_selected, enabled);
+		}
 
 	private:
 		bool m_IsMainBar : 1;
@@ -73,8 +71,16 @@ namespace imcxx
 			else
 				ImGui::EndMainMenuBar();
 		}
+
+		item add_item_impl(const char* label, bool enabled = true);
+
+		menuitem_entry add_entry_impl(const char* label, const char* shortcut = nullptr, bool selected = false, bool enabled = true);
+
+		menuitem_entry add_entry_impl(const char* label, const char* shortcut, bool* p_selected, bool enabled = true);
 	};
 
+
+	using menubar_item = menubar::item;
 	class [[nodiscard]] menubar::item : public scope_wrap<item>
 	{
 		friend class scope_wrap;
@@ -91,28 +97,30 @@ namespace imcxx
 		/// <summary>
 		/// return true when activated.
 		/// </summary>
-		menuitem_entry add_entry(const char* label, const char* shortcut = nullptr, bool selected = false, bool enabled = true);
+		template<typename _Str0Ty, typename _Str1Ty = const char*>
+		menuitem_entry add_entry(const _Str0Ty& label, const _Str1Ty& shortcut = nullptr, bool selected = false, bool enabled = true)
+		{
+			return add_entry_impl(impl::get_string(label), impl::get_string(shortcut), selected, enabled);
+		}
 
 		/// <summary>
 		/// return true when activated + toggle (*p_selected) if p_selected != nullptr
 		/// </summary>
-		menuitem_entry add_entry(const char* label, const char* shortcut, bool* p_selected, bool enabled = true);
-		
-		/// <summary>
-		/// return true when activated.
-		/// </summary>
-		menuitem_entry add_entry(std::string_view label, std::string_view shortcut = "", bool selected = false, bool enabled = true);
-
-		/// <summary>
-		/// return true when activated + toggle (*p_selected) if p_selected != nullptr
-		/// </summary>
-		menuitem_entry add_entry(std::string_view label, std::string_view shortcut, bool* p_selected, bool enabled = true);
+		template<typename _Str0Ty, typename _Str1Ty = const char*>
+		menuitem_entry add_entry(const _Str0Ty& label, const _Str1Ty& shortcut, bool* p_selected, bool enabled = true)
+		{
+			return add_entry_impl(impl::get_string(label), impl::get_string(shortcut), p_selected, enabled);
+		}
 
 	private:
 		void destruct()
 		{
 			ImGui::EndMenu();
 		}
+
+		menuitem_entry add_entry_impl(const char* label, const char* shortcut = nullptr, bool selected = false, bool enabled = true);
+
+		menuitem_entry add_entry_impl(const char* label, const char* shortcut, bool* p_selected, bool enabled = true);
 	};
 
 
@@ -137,55 +145,30 @@ namespace imcxx
 	};
 
 
-	inline auto menubar::add_item(const char* label, bool enabled) -> item
+	inline auto menubar::add_item_impl(const char* label, bool enabled) -> item
 	{
 		return item{ label, enabled };
 	}
 
-	inline auto menubar::add_item(std::string_view label, bool enabled) -> item
-	{
-		return item{ label.data(), enabled };
-	}
 
-
-	inline auto menubar::add_entry(const char* label, const char* shortcut, bool selected, bool enabled) -> menuitem_entry
+	inline auto menubar::add_entry_impl(const char* label, const char* shortcut, bool selected, bool enabled) -> menuitem_entry
 	{
 		return menuitem_entry{ label, shortcut, selected, enabled };
 	}
 
-	inline auto menubar::add_entry(const char* label, const char* shortcut, bool* p_selected, bool enabled) -> menuitem_entry
+	inline auto menubar::add_entry_impl(const char* label, const char* shortcut, bool* p_selected, bool enabled) -> menuitem_entry
 	{
 		return menuitem_entry{ label, shortcut, p_selected, enabled };
 	}
 
-	inline auto menubar::add_entry(std::string_view label, std::string_view shortcut, bool selected, bool enabled) -> menuitem_entry
-	{
-		return menuitem_entry{ label.data(), shortcut.empty() ? nullptr : shortcut.data(), selected, enabled };
-	}
 
-	inline auto menubar::add_entry(std::string_view label, std::string_view shortcut, bool* p_selected, bool enabled) -> menuitem_entry
-	{
-		return menuitem_entry{ label.data(), shortcut.empty() ? nullptr : shortcut.data(), p_selected, enabled };
-	}
-
-
-	inline auto menubar::item::add_entry(const char* label, const char* shortcut, bool selected, bool enabled) -> menuitem_entry
+	inline auto menubar_item::add_entry_impl(const char* label, const char* shortcut, bool selected, bool enabled) -> menuitem_entry
 	{
 		return menuitem_entry{ label, shortcut, selected, enabled };
 	}
 
-	inline auto menubar::item::add_entry(const char* label, const char* shortcut, bool* p_selected, bool enabled) -> menuitem_entry
+	inline auto menubar_item::add_entry_impl(const char* label, const char* shortcut, bool* p_selected, bool enabled) -> menuitem_entry
 	{
 		return menuitem_entry{ label, shortcut, p_selected, enabled };
-	}
-
-	inline auto menubar::item::add_entry(std::string_view label, std::string_view shortcut, bool selected, bool enabled) -> menuitem_entry
-	{
-		return menuitem_entry{ label.data(), shortcut.empty() ? nullptr : shortcut.data(), selected, enabled };
-	}
-
-	inline auto menubar::item::add_entry(std::string_view label, std::string_view shortcut, bool* p_selected, bool enabled) -> menuitem_entry
-	{
-		return menuitem_entry{ label.data(), shortcut.empty() ? nullptr : shortcut.data(), p_selected, enabled };
 	}
 }

@@ -8,31 +8,25 @@ namespace imcxx
 	class checkbox : public scope_wrap<checkbox, scope_traits::no_dtor>
 	{
 	public:
-		checkbox(const char* label, bool* p_open) :
-			scope_wrap(ImGui::Checkbox(label, p_open))
+		template<typename _StrTy>
+		checkbox(const _StrTy& label, bool* p_open) :
+			scope_wrap(ImGui::Checkbox(impl::get_string(label), p_open))
 		{}
 
-		checkbox(const char* label, bool& r_open) :
+		template<typename _StrTy>
+		checkbox(const _StrTy& label, bool& r_open) :
 			checkbox(label, &r_open)
 		{}
 		
-		checkbox(std::string_view label, bool& r_open) :
-			checkbox(label.data(), &r_open)
+
+		template<typename _StrTy, typename _Ty, typename _FlagsTy, typename = std::enable_if_t<std::is_integral_v<_Ty>>>
+		checkbox(const _StrTy& label, _Ty* flags, _FlagsTy flag) :
+			scope_wrap(ImGui::CheckboxFlagsT(impl::get_string(label), flags, static_cast<_Ty>(flag)))
 		{}
 
-		template<typename _Ty, typename _FlagsTy, typename = std::enable_if_t<std::is_integral_v<_Ty>>>
-		checkbox(const char* label, _Ty* flags, _FlagsTy flag) :
-			scope_wrap(ImGui::CheckboxFlagsT(label, flags, static_cast<_Ty>(flag)))
-		{}
-
-		template<typename _Ty, typename _FlagsTy>
-		checkbox(const char* label, _Ty& flags, _FlagsTy flag) :
+		template<typename _StrTy, typename _Ty, typename _FlagsTy>
+		checkbox(const _StrTy& label, _Ty& flags, _FlagsTy flag) :
 			checkbox(label, &flags, flag)
-		{}
-
-		template<typename _Ty, typename _FlagsTy>
-		checkbox(std::string_view label, _Ty& flags, _FlagsTy flag) :
-			checkbox(label.data(), &flags, flag)
 		{}
 	};
 

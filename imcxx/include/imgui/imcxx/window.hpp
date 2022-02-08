@@ -26,14 +26,11 @@ namespace imcxx
 		class child;
 		class capture;
 
-		window(const char* name, bool* p_open = nullptr, ImGuiWindowFlags flags = 0) :
-			scope_wrap(ImGui::Begin(name, p_open, flags))
+		template<typename _StrTy>
+		window(const _StrTy& name, bool* p_open = nullptr, ImGuiWindowFlags flags = 0) :
+			scope_wrap(ImGui::Begin(impl::get_string(name), p_open, flags))
 		{}
 
-		window(std::string_view str, bool* p_open = nullptr, ImGuiWindowFlags flags = 0) :
-			window(str.data(), p_open, flags)
-		{}
-		
 	private:
 		void destruct()
 		{
@@ -60,39 +57,19 @@ namespace imcxx
 	public:
 		struct frame {};
 
-		child(const char* str_id, const ImVec2& size = {}, bool border = false, ImGuiWindowFlags flags = 0) :
-			scope_wrap(ImGui::BeginChild(str_id, size, border, flags))
+		template<typename _StrTy, typename _VecTy = ImVec2>
+		child(const _StrTy& str_id, _VecTy size = {}, bool border = false, ImGuiWindowFlags flags = 0) :
+			scope_wrap(ImGui::BeginChild(impl::get_string(str_id), impl::to_imvec2(size), border, flags))
 		{}
 
-		child(std::string_view str, const ImVec2& size = {}, bool border = false, ImGuiWindowFlags flags = 0) :
-			child(str.data(), size, border, flags)
+		template<typename _VecTy = ImVec2>
+		child(ImGuiID id, const _VecTy& size = {}, bool border = false, ImGuiWindowFlags flags = 0) :
+			scope_wrap(ImGui::BeginChild(id, impl::to_imvec2(size), border, flags))
 		{}
 
-
-		child(const char* str_id, const std::array<float, 2>& size = { 0.f, 0.f }, bool border = false, ImGuiWindowFlags flags = 0) :
-			child(str_id, ImVec2{ size[0], size[1] }, border, flags)
-		{}
-
-		child(std::string_view str, const std::array<float, 2>& size = { 0.f, 0.f }, bool border = false, ImGuiWindowFlags flags = 0) :
-			child(str, ImVec2{ size[0], size[1] }, border, flags)
-		{}
-		
-
-		child(ImGuiID id, const ImVec2& size = {}, bool border = false, ImGuiWindowFlags flags = 0) :
-			scope_wrap(ImGui::BeginChild(id, size, border, flags))
-		{}
-
-		child(ImGuiID id, const std::array<float, 2>& size = {}, bool border = false, ImGuiWindowFlags flags = 0) :
-			child(id, ImVec2{ size[0], size[1] }, border, flags)
-		{}
-
-		
-		child(frame, ImGuiID id, const ImVec2& size = {}, ImGuiWindowFlags flags = 0) :
-			scope_wrap(ImGui::BeginChildFrame(id, size, flags))
-		{}
-
-		child(frame, ImGuiID id, const std::array<float, 2>& size = {}, ImGuiWindowFlags flags = 0) :
-			child(frame{}, id, ImVec2{ size[0], size[1] }, flags)
+		template<typename _VecTy = ImVec2>
+		child(frame, ImGuiID id, const _VecTy& size = {}, ImGuiWindowFlags flags = 0) :
+			scope_wrap(ImGui::BeginChildFrame(id, impl::to_imvec2(size), flags))
 		{}
 
 	private:

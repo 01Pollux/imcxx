@@ -15,61 +15,46 @@ namespace imcxx
 		struct va_args {};
 		struct push {};
 
-		tree_node(const char* label, ImGuiTreeNodeFlags flags = 0) :
-			scope_wrap(ImGui::TreeNodeEx(label, flags) && should_tree_pop(flags))
-		{}
-
-		template<typename ..._Args>
-		tree_node(const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, _Args&&... args) :
-			scope_wrap(ImGui::TreeNodeEx(ptr_id, flags, fmt, std::forward<_Args>(args)...) && should_tree_pop(flags))
-		{}
-		
-		template<typename ..._Args>
-		tree_node(std::string_view str_id, ImGuiTreeNodeFlags flags, const char* fmt, _Args&&... args) :
-			scope_wrap(ImGui::TreeNodeEx(str_id.data(), flags, fmt, std::forward<_Args>(args)...) && should_tree_pop(flags))
-		{}
-		
-
-		tree_node(va_args, const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list arg_list) :
-			scope_wrap(ImGui::TreeNodeExV(ptr_id, flags, fmt, arg_list) && should_tree_pop(flags))
-		{}
-		
-		tree_node(va_args, std::string_view str_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list arg_list) :
-			scope_wrap(ImGui::TreeNodeExV(str_id.data(), flags, fmt, arg_list) && should_tree_pop(flags))
+		template<typename _StrTy>
+		tree_node(const _StrTy& label, ImGuiTreeNodeFlags flags = 0) :
+			scope_wrap(ImGui::TreeNodeEx(std::is_same_v<void*, _StrTy> ? label : impl::get_string(label), flags) && should_tree_pop(flags))
 		{}
 
 
-		template<typename ..._Args>
-		tree_node(const void* ptr_id, const char* fmt, _Args&&... args) :
-			tree_node(ptr_id, 0, fmt, std::forward<_Args>(args)...)
-		{}
-
-		template<typename ..._Args>
-		tree_node(std::string_view str_id, const char* fmt, _Args&&... args) :
-			tree_node(str_id.data(), 0, fmt, std::forward<_Args>(args)...)
-		{}
-
-
-		tree_node(va_args, const void* ptr_id, const char* fmt, va_list arg_list) :
-			tree_node(ptr_id, 0, fmt, arg_list)
-		{}
-
-		tree_node(va_args, std::string_view str_id, const char* fmt, va_list arg_list) :
-			tree_node(str_id.data(), 0, fmt, arg_list)
-		{}
-
-
-		tree_node(push, const void* ptr_id) :
-			scope_wrap(true)
+		template<typename _StrTy, typename _FmtTy>
+		tree_node(va_args, const _StrTy& label, ImGuiTreeNodeFlags flags, const _FmtTy& fmt, va_list arg_list)
 		{
-			ImGui::TreePush(ptr_id);
+			if constexpr (std::is_same_v<_StrTy, void*>)
+				m_Result._Value = ImGui::TreeNodeExV(label, flags, impl::get_string(fmt), arg_list) && should_tree_pop(flags);
+			else
+				m_Result._Value = ImGui::TreeNodeExV(impl::get_string(label), 0, impl::get_string(fmt), arg_list) && should_tree_pop(flags);
+		}
+		
+
+		template<typename _StrTy, typename _FmtTy, typename ..._Args>
+		tree_node(const _StrTy& label, ImGuiTreeNodeFlags flags, const _FmtTy& fmt, _Args&&... args)
+		{
+			if constexpr (std::is_same_v<_StrTy, void*>)
+				m_Result._Value = ImGui::TreeNodeEx(label, flags, impl::get_string(fmt), std::forward<_Args>(args)...) && should_tree_pop(flags);
+			else
+				m_Result._Value = ImGui::TreeNodeEx(impl::get_string(label), flags, impl::get_string(fmt), std::forward<_Args>(args)...) && should_tree_pop(flags);
+		}
+		
+		template<typename _StrTy, typename _FmtTy, typename ..._Args>
+		tree_node(const _StrTy& label, const _FmtTy& fmt, _Args&&... args) : 
+			tree_node(label, 0, fmt, std::forward<_Args>(args)...)
+		{}
+
+
+		template<typename _StrTy>
+		tree_node(push, const _StrTy& label)
+		{
+			if constexpr (std::is_same_v<void*, _StrTy>)
+				ImGui::TreePush(label);
+			else
+				ImGui::TreePush(impl::get_string(label));
 		}
 
-		tree_node(push, std::string_view str_id) :
-			scope_wrap(true)
-		{
-			ImGui::TreePush(str_id.data());
-		}
 
 		/// <summary>
 		/// set next TreeNode/CollapsingHeader open state.
@@ -94,12 +79,9 @@ namespace imcxx
 	class collapsing_header : public scope_wrap<collapsing_header, scope_traits::no_dtor>
 	{
 	public:
-		collapsing_header(const char* label, ImGuiTreeNodeFlags flags = 0) :
-			scope_wrap(ImGui::CollapsingHeader(label, flags))
-		{}
-
-		collapsing_header(std::string_view label, ImGuiTreeNodeFlags flags = 0) :
-			collapsing_header(label.data(), flags)
+		template<typename _StrTy>
+		collapsing_header(const _StrTy& label, ImGuiTreeNodeFlags flags = 0) :
+			scope_wrap(ImGui::CollapsingHeader(impl::get_string(label), flags))
 		{}
 
 		void open_next(bool is_open, ImGuiCond cond = 0)
