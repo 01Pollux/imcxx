@@ -839,7 +839,7 @@ static void ShowDemoWindowWidgets()
                 if (i == 0)
                     ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
-                if (imcxx::tree_node child_node{ (void*) i, "Child %d", i })
+                if (imcxx::tree_node child_node{ (void*) i, 0, "Child %d", i })
                 {
                     imcxx::text::call("blah blah");
                     ImGui::SameLine();

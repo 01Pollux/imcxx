@@ -34,16 +34,11 @@ namespace imcxx
 		template<typename _StrTy, typename _FmtTy, typename ..._Args>
 		tree_node(const _StrTy& label, ImGuiTreeNodeFlags flags, const _FmtTy& fmt, _Args&&... args)
 		{
-			if constexpr (std::is_same_v<_StrTy, void*>)
+			if constexpr (std::is_same_v<_StrTy, void*> || std::is_same_v<_StrTy, const void*>)
 				m_Result._Value = ImGui::TreeNodeEx(label, flags, impl::get_string(fmt), std::forward<_Args>(args)...) && should_tree_pop(flags);
 			else
 				m_Result._Value = ImGui::TreeNodeEx(impl::get_string(label), flags, impl::get_string(fmt), std::forward<_Args>(args)...) && should_tree_pop(flags);
 		}
-		
-		template<typename _StrTy, typename _FmtTy, typename ..._Args>
-		tree_node(const _StrTy& label, const _FmtTy& fmt, _Args&&... args) : 
-			tree_node(label, 0, fmt, std::forward<_Args>(args)...)
-		{}
 
 
 		template<typename _StrTy>

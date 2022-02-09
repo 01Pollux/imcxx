@@ -52,7 +52,7 @@ namespace imcxx
 		///  so if you add other flags remember to re-add the ImGuiPopupFlags_MouseButtonRight.
 		/// </summary>
 		template<typename _StrTy = const char*>
-		popup(context_item, const _StrTy& str_id = nullptr, bool* p_open = nullptr, ImGuiWindowFlags flags = 1) :
+		popup(context_item, const _StrTy& str_id = nullptr, ImGuiWindowFlags flags = 1) :
 			scope_wrap(ImGui::BeginPopupContextItem(impl::get_string(str_id), flags))
 		{}
 
@@ -65,7 +65,7 @@ namespace imcxx
 		///  so if you add other flags remember to re-add the ImGuiPopupFlags_MouseButtonRight.
 		/// </summary>
 		template<typename _StrTy = const char*>
-		popup(context_void, const _StrTy& str_id = nullptr, bool* p_open = nullptr, ImGuiWindowFlags flags = 1) :
+		popup(context_void, const _StrTy& str_id = nullptr, ImGuiWindowFlags flags = 1) :
 			scope_wrap(ImGui::BeginPopupContextVoid(impl::get_string(str_id), flags))
 		{}
 
@@ -78,7 +78,7 @@ namespace imcxx
 		///  so if you add other flags remember to re-add the ImGuiPopupFlags_MouseButtonRight.
 		/// </summary>
 		template<typename _StrTy = const char*>
-		popup(context_window, const _StrTy& str_id = nullptr, bool* p_open = nullptr, ImGuiWindowFlags flags = 1) :
+		popup(context_window, const _StrTy& str_id = nullptr, ImGuiWindowFlags flags = 1) :
 			scope_wrap(ImGui::BeginPopupContextWindow(impl::get_string(str_id), flags))
 		{}
 
