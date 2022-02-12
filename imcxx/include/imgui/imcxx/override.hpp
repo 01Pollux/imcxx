@@ -54,7 +54,8 @@ namespace imcxx
 		
 		~shared_override()
 		{
-			pop(m_PopCount);
+			if (m_PopCount)
+				pop(m_PopCount);
 		}
 
 		template<typename ..._Args>
@@ -77,9 +78,10 @@ namespace imcxx
 
 		void pop(size_t count = 1)
 		{
+			IM_ASSERT(m_PopCount >= count);
+			m_PopCount -= count;
 			if constexpr (_Strategy == shared_override_strategy::font)
 			{
-				m_PopCount -= count;
 				while (count-- != 0)
 				{
 					ImGui::PopFont();
@@ -87,7 +89,6 @@ namespace imcxx
 			}
 			else if constexpr (_Strategy == shared_override_strategy::text_wrap)
 			{
-				m_PopCount -= count;
 				while (count-- != 0)
 				{
 					ImGui::PopTextWrapPos();
@@ -95,7 +96,6 @@ namespace imcxx
 			}
 			else if constexpr (_Strategy == shared_override_strategy::item_flag)
 			{
-				m_PopCount -= count;
 				while (count-- != 0)
 				{
 					ImGui::PopItemFlag();
@@ -103,7 +103,6 @@ namespace imcxx
 			}
 			else if constexpr (_Strategy == shared_override_strategy::item_width)
 			{
-				m_PopCount -= count;
 				while (count-- != 0)
 				{
 					ImGui::PopItemWidth();
@@ -111,7 +110,6 @@ namespace imcxx
 			}
 			else if constexpr (_Strategy == shared_override_strategy::item_id)
 			{
-				m_PopCount -= count;
 				while (count-- != 0)
 				{
 					ImGui::PopID();
@@ -119,7 +117,6 @@ namespace imcxx
 			}
 			else if constexpr (_Strategy == shared_override_strategy::focus_scope)
 			{
-				m_PopCount -= count;
 				while (count-- != 0)
 				{
 					ImGui::PopFocusScope();
@@ -127,7 +124,6 @@ namespace imcxx
 			}
 			else if constexpr (_Strategy == shared_override_strategy::clip_rect || _Strategy == shared_override_strategy::column_clip_rect)
 			{
-				m_PopCount -= count;
 				while (count-- != 0)
 				{
 					ImGui::PopClipRect();
@@ -135,14 +131,17 @@ namespace imcxx
 			}
 			else if constexpr (_Strategy == shared_override_strategy::style_color)
 			{
-				ImGui::PopStyleColor(m_PopCount);
-				m_PopCount -= count;
+				ImGui::PopStyleColor(count);
 			}
 			else if constexpr (_Strategy == shared_override_strategy::style_var)
 			{
-				ImGui::PopStyleVar(m_PopCount);
-				m_PopCount -= count;
+				ImGui::PopStyleVar(count);
 			}
+		}
+
+		void pop_all()
+		{
+			pop(count());
 		}
 
 		void unsafe_pop(size_t count) noexcept

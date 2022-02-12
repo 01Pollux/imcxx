@@ -169,6 +169,7 @@
     <ClInclude Include="include\imgui\imcxx\layout.hpp" />
     <ClInclude Include="include\imgui\imcxx\listbox.hpp" />
     <ClInclude Include="include\imgui\imcxx\menuitem.hpp" />
+    <ClInclude Include="include\imgui\imcxx\misc\notification.hpp" />
     <ClInclude Include="include\imgui\imcxx\nodes.hpp" />
     <ClInclude Include="include\imgui\imcxx\override.hpp" />
     <ClInclude Include="include\imgui\imcxx\popup.hpp" />
@@ -190,6 +191,8 @@
     <ClInclude Include="test\directx9\imgui_impl_win32.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\imgui\imcxx\misc\notifications\demo.cpp" />
+    <ClCompile Include="include\imgui\imcxx\misc\notifications\notification.cpp" />
     <ClCompile Include="include\imgui\imgui.cpp" />
     <ClCompile Include="include\imgui\imgui_demo.cpp" />
     <ClCompile Include="include\imgui\imgui_draw.cpp" />

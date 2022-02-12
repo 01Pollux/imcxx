@@ -333,10 +333,24 @@ namespace imcxx
 					callback,
 					user_data
 				};
-				m_Result._Value = ImGui::InputText(impl::get_string(label), p_input->data(), p_input->capacity() + 1, flags, &input_text_reforward, &data);
+				m_Result._Value = ImGui::InputText(
+					impl::get_string(label),
+					p_input->data(),
+					p_input->capacity() + 1, 
+					flags | ImGuiInputTextFlags_CallbackResize, 
+					&input_text_reforward, 
+					&data
+				);
 			}
 			else
-				m_Result._Value = ImGui::InputText(impl::get_string(label), input, std::extent_v< _InputTy>, flags, callback, user_data);
+				m_Result._Value = ImGui::InputText(
+					impl::get_string(label),
+					input,
+					std::extent_v< _InputTy>, 
+					flags,
+					callback,
+					user_data
+				);
 		}
 
 		template<typename _LabelTy>
@@ -381,10 +395,26 @@ namespace imcxx
 					callback,
 					user_data
 				};
-				m_Result._Value = ImGui::InputTextMultiline(impl::get_string(label), input, size, p_input->data(), p_input->capacity() + 1, size, flags, &input_text_reforward, &data);
+				m_Result._Value = ImGui::InputTextMultiline(
+					impl::get_string(label), 
+					input, 
+					size, p_input->data(),
+					p_input->capacity() + 1, 
+					size, flags | ImGuiInputTextFlags_CallbackResize,
+					&input_text_reforward, 
+					&data
+				);
 			}
 			else
-				m_Result._Value = ImGui::InputTextMultiline(impl::get_string(label), input, std::extent_v<_InputTy>, size, flags, callback, user_data);
+				m_Result._Value = ImGui::InputTextMultiline(
+					impl::get_string(label),
+					input, 
+					std::extent_v<_InputTy>, 
+					size, 
+					flags, 
+					callback, 
+					user_data
+				);
 		}
 
 		template<typename _LabelTy>
@@ -433,7 +463,7 @@ namespace imcxx
 					impl::get_string(hint),
 					p_input->data(),
 					p_input->capacity() + 1,
-					flags, 
+					flags | ImGuiInputTextFlags_CallbackResize,
 					&input_text_reforward,
 					&data
 				);

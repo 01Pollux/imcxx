@@ -114,6 +114,9 @@
     <ClInclude Include="include\imgui\imcxx\popup.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\imgui\imcxx\misc\notification.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\imgui\imgui.cpp">
@@ -138,6 +141,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test\directx9\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imcxx\misc\notifications\notification.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imcxx\misc\notifications\demo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

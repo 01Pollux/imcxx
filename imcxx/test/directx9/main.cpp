@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include "imgui/imcxx/all_in_one.hpp"
+#include "imgui/imcxx/misc/notification.hpp"
 
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_win32.h"
@@ -175,6 +176,8 @@ int main(int, char**)
                         show_another_window = false;
                 };
             }
+
+            imcxx::misc::notification::render();
 
             auto c1 = std::chrono::steady_clock::now();
 
