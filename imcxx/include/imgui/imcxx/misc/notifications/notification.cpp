@@ -17,8 +17,7 @@ namespace imcxx::misc
 	void render_demo();
 #endif
 
-	using string_color = notification::query_info::string_color;
-	using in_string_color = notification::reg_info::string_color;
+	using string_color = notification::string_color;
 
 	struct pending_notification_info
 	{
@@ -30,28 +29,25 @@ namespace imcxx::misc
 		uint32_t Id;
 		uint32_t BGColor, BorderColor;
 
+		std::function<void(uint32_t)> OnRightClick;
+		std::function<void(uint32_t, bool)> OnEnd;
+
 		pending_notification_info(
-			const std::vector<in_string_color>& title,
-			const std::vector<in_string_color>& texts,
-			uint64_t duration,
 			uint32_t id,
-			uint32_t bgcolor,
-			uint32_t fgcolor
-		) :
-			Duration(duration),
+			notification::reg_info&& info
+		) noexcept :
+			Title(std::move(info.Title)),
+			Texts(std::move(info.Texts)),
+
+			Duration(info.Duration),
 			Id(id),
 
-			BGColor(bgcolor),
-			BorderColor(fgcolor)
-		{
-			Title.reserve(title.size());
-			for (auto& v : title)
-				Title.emplace_back(v.string, v.color);
+			BGColor(info.BGColor),
+			BorderColor(info.BorderColor),
 
-			Texts.reserve(texts.size());
-			for (auto& v : texts)
-				Texts.emplace_back(v.string, v.color);
-		}
+			OnRightClick(std::move(info.OnRightClick)),
+			OnEnd(std::move(info.OnEnd))
+		{}
 	};
 
 	struct notification_info
@@ -65,34 +61,31 @@ namespace imcxx::misc
 		uint32_t Id;
 		uint32_t BGColor, BorderColor;
 
+		std::function<void(uint32_t)> OnRightClick;
+		std::function<void(uint32_t, bool)> OnEnd;
+
 		notification_info(
-			const std::vector<in_string_color>& title,
-			const std::vector<in_string_color>& texts,
-			std::chrono::system_clock::time_point time_point,
-			uint64_t duration,
 			uint32_t id,
-			uint32_t bgcolor,
-			uint32_t fgcolor
-		) :
+			std::chrono::system_clock::time_point time_point,
+			notification::reg_info&& info
+		) noexcept :
+			Title(std::move(info.Title)),
+			Texts(std::move(info.Texts)),
+
 			StartTime(time_point),
-			EndTime(time_point + std::chrono::milliseconds(duration)),
+			EndTime(time_point + std::chrono::milliseconds(info.Duration)),
 			Id(id),
 
-			BGColor(bgcolor),
-			BorderColor(fgcolor)
-		{
-			Title.reserve(title.size());
-			for (auto& v : title)
-				Title.emplace_back(v.string, v.color);
+			BGColor(info.BGColor),
+			BorderColor(info.BorderColor),
 
-			Texts.reserve(texts.size());
-			for (auto& v : texts)
-				Texts.emplace_back(v.string, v.color);
-		}
+			OnRightClick(std::move(info.OnRightClick)),
+			OnEnd(std::move(info.OnEnd))
+		{}
 
 		notification_info(
 			pending_notification_info&& pending
-		) :
+		) noexcept :
 			Title(std::move(pending.Title)),
 			Texts(std::move(pending.Texts)),
 
@@ -101,7 +94,10 @@ namespace imcxx::misc
 			Id(std::move(pending.Id)),
 
 			BGColor(pending.BGColor),
-			BorderColor(pending.BorderColor)
+			BorderColor(pending.BorderColor),
+
+			OnRightClick(std::move(pending.OnRightClick)),
+			OnEnd(std::move(pending.OnEnd))
 		{}
 	};
 
@@ -118,7 +114,7 @@ namespace imcxx::misc
 	static constexpr size_t max_popups_in_window = 3;
 
 
-	notification::notification(const reg_info& info, uint32_t* out_id)
+	notification::notification(reg_info&& info, uint32_t* out_id)
 	{
 		uint32_t id = 0;
 		while (std::any_of(_Notifications.begin(), _Notifications.end(), [id](const auto& it) { return it.Id == id; }) ||
@@ -128,63 +124,60 @@ namespace imcxx::misc
 		if (out_id)
 			*out_id = id;
 
-		if (_Notifications.size() < max_popups_in_window)
-		{
-			auto now = std::chrono::system_clock::now();
-			_Notifications.emplace_back(
-				info.Title,
-				info.Texts,
-				now,
-				info.Duration,
-				id,
-				info.BGColor,
-				info.BorderColor
-			);
-		}
-		else
-		{
-			_PendingNotifications.emplace_back(
-				info.Title,
-				info.Texts,
-				info.Duration,
-				id,
-				info.BGColor,
-				info.BorderColor
-			);
-		}
+		_PendingNotifications.emplace_back(
+			id,
+			std::move(info)
+		);
 	}
+
 
 	notification::notification(query_info& info)
 	{
-		auto iter = std::find_if(
-			_Notifications.begin(), _Notifications.end(), [id = info.Id](const auto& it){ return it.Id == id; }
-		);
-
-		if (iter != _Notifications.end())
+		auto check_in = [&info](auto& container, bool pending)
 		{
-			if (info.Exists)
-				*info.Exists = true;
+			auto iter = std::find_if(
+				std::begin(container), std::end(container), [id = info.Id](const auto& it){ return it.Id == id; }
+			);
 
-			if (info.Delete)
-				_Notifications.erase(iter);
+			if (iter != std::end(container))
+			{
+				if (info.Exists)
+					*info.Exists = true;
+				if (info.Pending)
+					*info.Pending = pending;
+
+				if (info.Delete)
+					container.erase(iter);
+				else
+				{
+					if (info.Title)
+						*info.Title = std::addressof(iter->Title);
+					if (info.Texts)
+						*info.Texts = std::addressof(iter->Texts);
+					if (info.BGColor)
+						*info.BGColor = std::addressof(iter->BGColor);
+					if (info.BorderColor)
+						*info.BorderColor = std::addressof(iter->BorderColor);
+				}
+
+				if (info.Pending)
+					*info.Pending = pending;
+				return true;
+			}
 			else
 			{
-				if (info.Title)
-					*info.Title = std::addressof(iter->Title);
-				if (info.Texts)
-					*info.Texts = std::addressof(iter->Texts);
-				if (info.BGColor)
-					*info.BGColor = std::addressof(iter->BGColor);
-				if (info.BorderColor)
-					*info.BorderColor = std::addressof(iter->BorderColor);
+				if (info.Exists)
+					*info.Exists = false;
+				if (info.Pending)
+					*info.Pending = pending;
+				return false;
 			}
-		}
-		else
-		{
-			if (info.Exists)
-				*info.Exists = false;
-		}
+		};
+
+		if (!check_in(_Notifications, false))
+			check_in(_PendingNotifications, true);
 	}
+
 
 	[[nodiscard]] float get_opacity(
 		std::chrono::system_clock::time_point begin_time,
@@ -205,6 +198,7 @@ namespace imcxx::misc
 		else return 1.f;
 	}
 
+
 	void notification::render()
 	{
 #ifndef IMCXX_NOTIFICATION_NO_DEMO
@@ -212,23 +206,30 @@ namespace imcxx::misc
 #endif
 		auto now = std::chrono::system_clock::now();
 
-		auto it = std::remove_if(
-			_Notifications.begin(),
-			_Notifications.end(),
-			[now](const auto& it)
-			{
-				return it.EndTime <= now;
-			}
-		);
-		_Notifications.erase(it, _Notifications.end());
-
-		if (_PendingNotifications.size() && _Notifications.size() < max_popups_in_window)
 		{
-			const size_t num_pendings = std::clamp(std::min(_Notifications.size(), _PendingNotifications.size()), 0u, 3u);
-			for (size_t i = 0; i < num_pendings; i++)
+			auto it = std::remove_if(
+				_Notifications.begin(),
+				_Notifications.end(),
+				[now](const auto& it)
+				{
+					if (it.EndTime <= now)
+					{
+						if (it.OnEnd)
+							it.OnEnd(it.Id, false);
+						return true;
+					}
+					else return false;
+				}
+			);
+			_Notifications.erase(it, _Notifications.end());
+
+			if (_PendingNotifications.size() && _Notifications.size() < max_popups_in_window)
 			{
-				_Notifications.emplace_back(std::move(_PendingNotifications.front()));
-				_PendingNotifications.pop_front();
+				for (size_t i = 0; i < _PendingNotifications.size() && _Notifications.size() < max_popups_in_window; i++)
+				{
+					_Notifications.emplace_back(std::move(_PendingNotifications.front()));
+					_PendingNotifications.pop_front();
+				}
 			}
 		}
 
@@ -242,7 +243,7 @@ namespace imcxx::misc
 		{
 			ImGui::SetNextWindowBgAlpha(get_opacity(notif->StartTime, notif->EndTime, now));
 			ImGui::SetNextWindowPos({ view_start_pos.x, view_start_pos.y }, ImGuiCond_Always, ImVec2(1.f, 1.f));
-			ImGui::SetNextWindowSize({ view_start_pos.x / 3.2f, -FLT_MAX });
+			ImGui::SetNextWindowSize({ main_view->WorkSize.x / 3.2f, -FLT_MAX });
 
 			imcxx::shared_color bg_and_border{
 				ImGuiCol_WindowBg,
@@ -260,7 +261,7 @@ namespace imcxx::misc
 #ifdef IMGUI_HAS_DOCK
 				ImGuiWindowFlags_NoDocking |
 #endif
-				ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoSavedSettings
+				ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoSavedSettings
 			);
 
 			bg_and_border.pop_all();
@@ -272,9 +273,11 @@ namespace imcxx::misc
 				if (ImGui::IsWindowHovered())
 					notif->EndTime += static_cast<size_t>(ImGui::GetIO().DeltaTime * 1600.f) * 1ms;
 
-				if (imcxx::popup close_popup{ imcxx::popup::context_window{}, "##Close Window" })
+				if (imcxx::popup close_popup{ imcxx::popup::context_window{}, "##NotificationPopup" })
 				{
 					notif->EndTime += static_cast<size_t>(ImGui::GetIO().DeltaTime * 1600.f) * 1ms;
+					if (notif->OnRightClick)
+						notif->OnRightClick(notif->Id);
 					if (ImGui::Selectable("Close"))
 						close = true;
 				}
@@ -303,7 +306,11 @@ namespace imcxx::misc
 			view_start_pos.y -= ImGui::GetWindowSize().y + 10.f;
 
 			if (close)
+			{
+				if (notif->OnEnd)
+					notif->OnEnd(notif->Id, true);
 				notif = _Notifications.erase(notif);
+			}
 			else
 			{
 				++notif;
