@@ -27,7 +27,6 @@ namespace imcxx::misc
 		/// <summary>
 		/// Register a new notification for display
 		/// <param name="id">if 'Id' is not nullptr, Id will have notification's id</param>
-		/// <returns></returns>
 		IMGUI_API notification(reg_info&&, uint32_t* id = nullptr);
 
 
@@ -39,7 +38,6 @@ namespace imcxx::misc
 		/// <summary>
 		/// Display the popups
 		/// </summary>
-		/// <returns></returns>
 		IMGUI_API static void render();
 
 		/// <summary>

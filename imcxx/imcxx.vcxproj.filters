@@ -117,6 +117,9 @@
     <ClInclude Include="include\imgui\imcxx\misc\notification.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\imgui\imcxx\misc\shortcut.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\imgui\imgui.cpp">
@@ -146,7 +149,13 @@
     <ClCompile Include="include\imgui\imcxx\misc\notifications\notification.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\imgui\imcxx\misc\notifications\demo.cpp">
+    <ClCompile Include="include\imgui\imcxx\misc\notifications\notification_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imcxx\misc\shortcuts\shortcuts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imcxx\misc\shortcuts\shortcut_demo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

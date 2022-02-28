@@ -131,11 +131,11 @@ namespace imcxx
 			}
 			else if constexpr (_Strategy == shared_override_strategy::style_color)
 			{
-				ImGui::PopStyleColor(count);
+				ImGui::PopStyleColor(static_cast<int>(count));
 			}
 			else if constexpr (_Strategy == shared_override_strategy::style_var)
 			{
-				ImGui::PopStyleVar(count);
+				ImGui::PopStyleVar(static_cast<int>(count));
 			}
 		}
 

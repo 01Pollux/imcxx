@@ -134,7 +134,7 @@ namespace imcxx
 		/// </summary>
 		template<size_t _ViewSize, typename _StrTy, typename _Ty, size_t _Size>
 		input(
-			array<_ViewSize> arr_size,
+			array<_ViewSize>,
 			const _StrTy& label,
 			std::array<_Ty, _Size>* v,
 			_Ty v_slow_step = {},
@@ -236,7 +236,6 @@ namespace imcxx
 		/// </summary>
 		template<size_t _ViewSize, typename _StrTy>
 		input(
-			array<_ViewSize> arr_size,
 			const _StrTy& label,
 			ImVec2* v,
 			float v_slow_step = {},
@@ -245,9 +244,9 @@ namespace imcxx
 			ImGuiSliderFlags flags = 0
 		) :
 #if _HAS_CXX20
-			input(arr_size, label, std::bit_cast<std::array<float, 2>*>(&v), v_slow_step, v_fast_step, format, flags)
+			input(label, std::bit_cast<std::array<float, 2>*>(&v), v_slow_step, v_fast_step, format, flags)
 #else
-			input(arr_size, label, reinterpret_cast<std::array<float, 2>*>(&v), v_slow_step, v_fast_step, format, flags)
+			input(label, reinterpret_cast<std::array<float, 2>*>(&v), v_slow_step, v_fast_step, format, flags)
 #endif
 		{}
 
@@ -257,7 +256,6 @@ namespace imcxx
 		/// </summary>
 		template<size_t _ViewSize, typename _StrTy>
 		input(
-			array<_ViewSize> arr_size,
 			const _StrTy& label,
 			ImVec2& v,
 			float v_slow_step = {},
@@ -265,7 +263,7 @@ namespace imcxx
 			const char* format = "%.3f",
 			ImGuiSliderFlags flags = 0
 		) :
-			input(arr_size, label, &v, v_slow_step, v_fast_step, format, flags)
+			input(label, &v, v_slow_step, v_fast_step, format, flags)
 		{}
 
 
@@ -274,7 +272,6 @@ namespace imcxx
 		/// </summary>
 		template<size_t _ViewSize, typename _StrTy>
 		input(
-			array<_ViewSize> arr_size,
 			const _StrTy& label,
 			ImVec4* v,
 			float v_slow_step = {},
@@ -283,9 +280,9 @@ namespace imcxx
 			ImGuiSliderFlags flags = 0
 		) :
 #if _HAS_CXX20
-			input(arr_size, label, std::bit_cast<std::array<float, 4>*>(&v), v_slow_step, v_fast_step, format, flags)
+			input(label, std::bit_cast<std::array<float, 4>*>(&v), v_slow_step, v_fast_step, format, flags)
 #else
-			input(arr_size, label, reinterpret_cast<std::array<float, 4>*>(&v), v_slow_step, v_fast_step, format, flags)
+			input(label, reinterpret_cast<std::array<float, 4>*>(&v), v_slow_step, v_fast_step, format, flags)
 #endif
 		{}
 
@@ -294,7 +291,6 @@ namespace imcxx
 		/// </summary>
 		template<size_t _ViewSize, typename _StrTy>
 		input(
-			array<_ViewSize> arr_size,
 			const _StrTy& label,
 			ImVec4& v,
 			float v_slow_step = {},
@@ -302,7 +298,7 @@ namespace imcxx
 			const char* format = "%.3f",
 			ImGuiSliderFlags flags = 0
 		) :
-			input(arr_size, label, &v, v_slow_step, v_fast_step, format, flags)
+			input(label, &v, v_slow_step, v_fast_step, format, flags)
 		{}
 
 
@@ -353,12 +349,15 @@ namespace imcxx
 				);
 		}
 
+		/// <summary>
+		/// for restricted size of a text buffer, we'll be passing input_size before input buffer to avoid flags ambiguity
+		/// </summary>
 		template<typename _LabelTy>
 		input(
 			text,
 			const _LabelTy& label,
+			size_t input_size,
 			char* input, 
-			size_t input_size, 
 			ImGuiInputTextFlags flags = 0,
 			ImGuiInputTextCallback callback = nullptr, 
 			void* user_data = nullptr
@@ -417,12 +416,15 @@ namespace imcxx
 				);
 		}
 
+		/// <summary>
+		/// for restricted size of a text buffer, we'll be passing input_size before input buffer to avoid flags ambiguity
+		/// </summary>
 		template<typename _LabelTy>
 		input(
 			multiline, 
 			const _LabelTy& label, 
-			char* input, 
 			size_t input_size, 
+			char* input, 
 			ImVec2 size = {}, 
 			ImGuiInputTextFlags flags = 0, 
 			ImGuiInputTextCallback callback = nullptr, 
@@ -482,13 +484,16 @@ namespace imcxx
 			}
 		}
 
+		/// <summary>
+		/// for restricted size of a text buffer, we'll be passing input_size before input buffer to avoid flags ambiguity
+		/// </summary>
 		template<typename _LabelTy, typename _HintTy>
 		input(
 			hint,
 			const _LabelTy& label, 
 			const _HintTy& hint, 
-			char* input,
 			size_t input_size, 
+			char* input,
 			ImGuiInputTextFlags flags = 0,
 			ImGuiInputTextCallback callback = nullptr, 
 			void* user_data = nullptr) :

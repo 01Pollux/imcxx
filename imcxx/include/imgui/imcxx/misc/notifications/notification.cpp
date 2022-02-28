@@ -13,8 +13,8 @@
 
 namespace imcxx::misc
 {
-#ifndef IMCXX_NOTIFICATION_NO_DEMO
-	void render_demo();
+#ifndef IMCXX_MISC_NOTIFICATION_NO_DEMO
+	void render_notifications_demo();
 #endif
 
 	using string_color = notification::string_color;
@@ -151,13 +151,13 @@ namespace imcxx::misc
 				else
 				{
 					if (info.Title)
-						*info.Title = std::addressof(iter->Title);
+						*info.Title = &iter->Title;
 					if (info.Texts)
-						*info.Texts = std::addressof(iter->Texts);
+						*info.Texts = &iter->Texts;
 					if (info.BGColor)
-						*info.BGColor = std::addressof(iter->BGColor);
+						*info.BGColor = &iter->BGColor;
 					if (info.BorderColor)
-						*info.BorderColor = std::addressof(iter->BorderColor);
+						*info.BorderColor = &iter->BorderColor;
 				}
 
 				if (info.Pending)
@@ -179,7 +179,8 @@ namespace imcxx::misc
 	}
 
 
-	[[nodiscard]] float get_opacity(
+	[[nodiscard]]
+	float get_opacity(
 		std::chrono::system_clock::time_point begin_time,
 		std::chrono::system_clock::time_point end_time,
 		std::chrono::system_clock::time_point cur_time
@@ -202,7 +203,7 @@ namespace imcxx::misc
 	void notification::render()
 	{
 #ifndef IMCXX_NOTIFICATION_NO_DEMO
-		render_demo();
+		render_notifications_demo();
 #endif
 		auto now = std::chrono::system_clock::now();
 

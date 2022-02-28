@@ -1,4 +1,4 @@
-#ifndef IMCXX_NOTIFICATION_NO_DEMO
+#ifndef IMCXX_MISC_NOTIFICATION_NO_DEMO
 
 #include "../notification.hpp"
 
@@ -14,7 +14,7 @@
 
 namespace imcxx::misc
 {
-	void render_demo()
+	void render_notifications_demo()
 	{
 		ImGui::SetNextWindowSize({ 550.f, 550.f }, ImGuiCond_Once);
 		imcxx::window notification_demo(
@@ -43,7 +43,7 @@ namespace imcxx::misc
 				cfg.Texts.emplace_back("Something went wrong...");
 				cfg.Duration = 4'000;
 
-				imcxx::misc::notification::call(std::move(cfg), std::addressof(last_id));
+				imcxx::misc::notification::call(std::move(cfg), &last_id);
 			}
 
 			if (ImGui::Button("Debug"))
@@ -54,7 +54,7 @@ namespace imcxx::misc
 				cfg.Texts.emplace_back("Some debug information.");
 				cfg.Duration = 4'000;
 
-				imcxx::misc::notification::call(std::move(cfg), std::addressof(last_id));
+				imcxx::misc::notification::call(std::move(cfg), &last_id);
 			}
 
 			if (ImGui::Button("With end callback"))
@@ -80,10 +80,10 @@ namespace imcxx::misc
 						cfg.Texts.emplace_back("Notification's lifespan has ended.");
 						cfg.Duration = 2'000;
 					}
-					imcxx::misc::notification::call(std::move(cfg), std::addressof(last_id));
+					imcxx::misc::notification::call(std::move(cfg), &last_id);
 				};
 
-				imcxx::misc::notification::call(std::move(cfg), std::addressof(last_id));
+				imcxx::misc::notification::call(std::move(cfg), &last_id);
 			}
 
 			if (ImGui::Button("with extra popups"))
@@ -113,7 +113,7 @@ namespace imcxx::misc
 					}
 				};
 
-				imcxx::misc::notification::call(std::move(cfg), std::addressof(last_id));
+				imcxx::misc::notification::call(std::move(cfg), &last_id);
 			}
 
 			if (ImGui::Button("Lorem ipsum"))
@@ -134,7 +134,7 @@ namespace imcxx::misc
 				);
 				cfg.Duration = 7'000;
 
-				imcxx::misc::notification::call(std::move(cfg), std::addressof(last_id));
+				imcxx::misc::notification::call(std::move(cfg), &last_id);
 			}
 		}
 
@@ -150,8 +150,8 @@ namespace imcxx::misc
 
 
 			for (auto entry : std::array{
-					std::addressof(titles),
-					std::addressof(texts)
+					&titles,
+					&texts
 				})
 			{
 				imcxx::shared_item_id entry_override(entry);
@@ -165,7 +165,7 @@ namespace imcxx::misc
 				{
 					for (auto& str_col : *entry)
 					{
-						imcxx::shared_item_id id_override(std::addressof(str_col));
+						imcxx::shared_item_id id_override(&str_col);
 						imcxx::input::call(imcxx::input::text{}, "##InputText", str_col.first);
 						imcxx::color::call(imcxx::color::edit{}, "##color", str_col.second);
 					}
@@ -184,15 +184,15 @@ namespace imcxx::misc
 				cur_config.BorderColor = imcxx::misc::notification::color_to_u32(border_color);
 
 				for (auto& entry : std::array{
-						std::pair{ std::addressof(cur_config.Title), titles},
-						std::pair{ std::addressof(cur_config.Texts), texts}
+						std::pair{ &cur_config.Title, titles},
+						std::pair{ &cur_config.Texts, texts}
 					})
 				{
 					for (auto& [str, color] : entry.second)
 						entry.first->emplace_back(std::string_view{ str.c_str(), str.size() }, imcxx::misc::notification::color_to_u32(color));
 				}
 
-				imcxx::misc::notification::call(std::move(cur_config), std::addressof(last_id));
+				imcxx::misc::notification::call(std::move(cur_config), &last_id);
 			}
 		}
 	}

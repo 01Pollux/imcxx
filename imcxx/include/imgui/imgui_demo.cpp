@@ -832,14 +832,14 @@ static void ShowDemoWindowWidgets()
         IMGUI_DEMO_MARKER("Widgets/Trees/Basic trees");
         if (imcxx::tree_node basic_trees{ "Basic trees" })
         {
-            for (int i = 0; i < 5; i++)
+            for (size_t i = 0; i < 5; i++)
             {
                 // Use SetNextItemOpen() so set the default state of a node to be open. We could
                 // also use TreeNodeEx() with the ImGuiTreeNodeFlags_DefaultOpen flag to achieve the same thing!
                 if (i == 0)
                     ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
-                if (imcxx::tree_node child_node{ (void*) i, 0, "Child %d", i })
+                if (imcxx::tree_node child_node{ reinterpret_cast<void*>(i), 0, "Child %d", i})
                 {
                     imcxx::text::call("blah blah");
                     ImGui::SameLine();
@@ -888,7 +888,7 @@ static void ShowDemoWindowWidgets()
                     if (i < 3)
                     {
                         // Items 0..2 are Tree Node
-                        imcxx::tree_node cur_node((void*) i, node_flags, "Selectable Node %d", i);
+                        imcxx::tree_node cur_node(reinterpret_cast<void*>(static_cast<size_t>(i)), node_flags, "Selectable Node %d", i);
 
                         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
                             node_clicked = i;
@@ -911,7 +911,7 @@ static void ShowDemoWindowWidgets()
                         // The only reason we use TreeNode at all is to allow selection of the leaf. Otherwise we can
                         // use BulletText() or advance the cursor by GetTreeNodeToLabelSpacing() and call Text().
                         node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
-                        imcxx::tree_node cur_node((void*) i, node_flags, "Selectable Leaf %d", i);
+                        imcxx::tree_node cur_node(reinterpret_cast<void*>(static_cast<size_t>(i)), node_flags, "Selectable Leaf %d", i);
 
                         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
                             node_clicked = i;
@@ -1402,13 +1402,12 @@ static void ShowDemoWindowWidgets()
                 return 1;
             };
 
-
-            static char buf1[64] = ""; imcxx::input::call(imcxx::input::text{}, "default", buf1, 64u);
-            static char buf2[64] = ""; imcxx::input::call(imcxx::input::text{}, "decimal", buf2, 64u, ImGuiInputTextFlags_CharsDecimal);
-            static char buf3[64] = ""; imcxx::input::call(imcxx::input::text{}, "hexadecimal", buf3, 64u, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
-            static char buf4[64] = ""; imcxx::input::call(imcxx::input::text{}, "uppercase", buf4, 64u, ImGuiInputTextFlags_CharsUppercase);
-            static char buf5[64] = ""; imcxx::input::call(imcxx::input::text{}, "no blank", buf5, 64u, ImGuiInputTextFlags_CharsNoBlank);
-            static char buf6[64] = ""; imcxx::input::call(imcxx::input::text{}, "\"imgui\" letters", buf6, 64u, ImGuiInputTextFlags_CallbackCharFilter, filter_imgui_letters);
+            static char buf1[64] = ""; imcxx::input(imcxx::input::text{}, "default", 64u, buf1);
+            static char buf2[64] = ""; imcxx::input(imcxx::input::text{}, "decimal", 64u, buf2, ImGuiInputTextFlags_CharsDecimal);
+            static char buf3[64] = ""; imcxx::input(imcxx::input::text{}, "hexadecimal", 64u, buf3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
+            static char buf4[64] = ""; imcxx::input(imcxx::input::text{}, "uppercase", 64u, buf4, ImGuiInputTextFlags_CharsUppercase);
+            static char buf5[64] = ""; imcxx::input(imcxx::input::text{}, "no blank", 64u, buf5, ImGuiInputTextFlags_CharsNoBlank);
+            static char buf6[64] = ""; imcxx::input(imcxx::input::text{}, "\"imgui\" letters", 64u, buf6, ImGuiInputTextFlags_CallbackCharFilter, filter_imgui_letters);
         }
 
         IMGUI_DEMO_MARKER("Widgets/Text Input/Password input");
@@ -1417,7 +1416,7 @@ static void ShowDemoWindowWidgets()
             static char password[64] = "password123";
             imcxx::input::call(imcxx::input::text{}, "password", password, ImGuiInputTextFlags_Password);
             ImGui::SameLine(); HelpMarker("Display all characters as '*'.\nDisable clipboard cut and copy.\nDisable logging.\n");
-            imcxx::input::call(imcxx::input::hint{}, "password (w/ hint)", "<password>", password, static_cast<size_t>(IM_ARRAYSIZE(password)), ImGuiInputTextFlags_Password);
+            imcxx::input::call(imcxx::input::hint{}, "password (w/ hint)", "<password>", password, ImGuiInputTextFlags_Password);
             imcxx::input::call(imcxx::input::text{}, "password (clear)", password);
         }
 
@@ -1502,7 +1501,7 @@ static void ShowDemoWindowWidgets()
                 static bool MyInputTextMultiline(const char* label, ImVector<char>* my_str, const ImVec2& size = ImVec2(0, 0), ImGuiInputTextFlags flags = 0)
                 {
                     IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);
-                    return imcxx::input::call(imcxx::input::multiline{}, label, my_str->begin(), (size_t) my_str->size(), size, flags | ImGuiInputTextFlags_CallbackResize, Funcs::MyResizeCallback, (void*)my_str);
+                    return imcxx::input::call(imcxx::input::multiline{}, label, static_cast<size_t>(my_str->size()), my_str->begin(), size, flags | ImGuiInputTextFlags_CallbackResize, Funcs::MyResizeCallback, (void*)my_str);
                 }
             };
 

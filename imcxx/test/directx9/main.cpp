@@ -6,6 +6,7 @@
 #include <chrono>
 #include "imgui/imcxx/all_in_one.hpp"
 #include "imgui/imcxx/misc/notification.hpp"
+#include "imgui/imcxx/misc/shortcut.hpp"
 
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_win32.h"
@@ -178,6 +179,7 @@ int main(int, char**)
             }
 
             imcxx::misc::notification::render();
+            imcxx::misc::shortcuts::handle_callbacks();
 
             auto c1 = std::chrono::steady_clock::now();
 
