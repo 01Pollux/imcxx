@@ -50,6 +50,27 @@ Calls the function `fn` regardless of it's state.
 Move the return value from the original object to the new one, and invalidate it.
 
 
+# misc
+
+## Notifications
+Insert or delete queued notifications with style.
+
+Define `IMCXX_MISC_NOTIFICATION_NO_DEMO` to disable the demo window.
+
+More examples in `imcxx/misc/notifications/notification_demo.cpp`
+
+<img src="https://user-images.githubusercontent.com/61026912/156073810-b5d7746f-4de6-4d2c-8803-cf3c08ba0fce.gif" width="75%">
+
+
+## Shortcuts
+Insert or delete easy-to-use shortcuts.
+
+Define `IMCXX_MISC_NO_SHORTCUT_DEMO` to disable the demo window.
+
+Example are in `imcxx/misc/shortcuts/shortcut_demo.cpp`
+
+<img src="https://user-images.githubusercontent.com/61026912/156074320-0e68423f-93ac-4a99-a15b-e64efb62c264.gif" width="75%">
+
 # Notes:
 Credits to `ocornut` for [ImGui](https://github.com/ocornut/imgui/tree/docking)
 
