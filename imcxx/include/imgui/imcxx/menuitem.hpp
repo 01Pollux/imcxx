@@ -15,7 +15,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] menubar : public scope_wrap<menubar>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<menubar>;
 	public:
 		class item;
 		class main_bar {};
@@ -83,7 +83,7 @@ namespace imcxx
 	using menubar_item = menubar::item;
 	class [[nodiscard]] menubar::item : public scope_wrap<item>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<item>;
 	public:
 
 		item(const char* label, bool enabled = true) :

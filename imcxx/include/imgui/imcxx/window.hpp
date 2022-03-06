@@ -21,7 +21,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] window : public scope_wrap<window, scope_traits::always_dtor>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<window, scope_traits::always_dtor>;
 	public:
 		class child;
 		class capture;
@@ -53,7 +53,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] window::child : public scope_wrap<window::child, scope_traits::always_dtor>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<window::child, scope_traits::always_dtor>;
 	public:
 		struct frame {};
 

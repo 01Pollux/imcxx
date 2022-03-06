@@ -10,7 +10,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] tree_node : public scope_wrap<tree_node>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<tree_node>;
 	public:
 		struct va_args {};
 		struct push {};

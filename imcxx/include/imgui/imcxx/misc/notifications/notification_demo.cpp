@@ -1,4 +1,4 @@
-#ifndef IMCXX_MISC_NOTIFICATION_NO_DEMO
+#ifndef IMCXX_MISC_NO_NOTIFICATION_DEMO
 
 #include "../notification.hpp"
 
@@ -41,7 +41,7 @@ namespace imcxx::misc
 				imcxx::misc::notification::reg_info cfg;
 				cfg.Title.emplace_back("Error", imcxx::misc::notification::color_to_u32({ 1.f, 0.f, 0.f, 1.f }));
 				cfg.Texts.emplace_back("Something went wrong...");
-				cfg.Duration = 4'000;
+				cfg.Duration = 4.f;
 
 				imcxx::misc::notification::call(std::move(cfg), &last_id);
 			}
@@ -52,7 +52,7 @@ namespace imcxx::misc
 
 				cfg.Title.emplace_back("Debug", imcxx::misc::notification::color_to_u32({ 1.f, 0.f, 0.f, 1.f }));
 				cfg.Texts.emplace_back("Some debug information.");
-				cfg.Duration = 4'000;
+                cfg.Duration = 4.f;
 
 				imcxx::misc::notification::call(std::move(cfg), &last_id);
 			}
@@ -63,7 +63,7 @@ namespace imcxx::misc
 
 				cfg.Title.emplace_back("End callback", imcxx::misc::notification::color_to_u32({ 1.f, 0.f, 0.f, 1.f }));
 				cfg.Texts.emplace_back("Notification before it expired.");
-				cfg.Duration = 2'000;
+				cfg.Duration = 2.f;
 
 				cfg.OnEnd = [](uint32_t, bool force_close)
 				{
@@ -72,13 +72,13 @@ namespace imcxx::misc
 					{
 						cfg.Title.emplace_back("Force close end callback", imcxx::misc::notification::color_to_u32({ 0.f, 1.f, 1.f, 1.f }));
 						cfg.Texts.emplace_back("Notification was terminating by the user.");
-						cfg.Duration = 2'000;
+						cfg.Duration = 2.f;
 					}
 					else
 					{
 						cfg.Title.emplace_back("close end callback", imcxx::misc::notification::color_to_u32({ 1.f, 0.f, 1.f, 1.f }));
 						cfg.Texts.emplace_back("Notification's lifespan has ended.");
-						cfg.Duration = 2'000;
+						cfg.Duration = 2.f;
 					}
 					imcxx::misc::notification::call(std::move(cfg), &last_id);
 				};
@@ -92,7 +92,7 @@ namespace imcxx::misc
 
 				cfg.Title.emplace_back("End callback", imcxx::misc::notification::color_to_u32({ 1.f, 0.f, 0.f, 1.f }));
 				cfg.Texts.emplace_back("Notification before it expired.");
-				cfg.Duration = 2'000;
+				cfg.Duration = 2.f;
 
 				cfg.OnRightClick = [](uint32_t)
 				{
@@ -132,7 +132,7 @@ namespace imcxx::misc
 					"lectus vestibulum.Vitae proin sagittis nisl rhoncus.",
 					imcxx::misc::notification::color_to_u32({ 0.f, 1.f, 0.f, 1.f })
 				);
-				cfg.Duration = 7'000;
+				cfg.Duration = 7.f;
 
 				imcxx::misc::notification::call(std::move(cfg), &last_id);
 			}
@@ -142,11 +142,11 @@ namespace imcxx::misc
 		{
 			static std::vector<std::pair<std::string, ImVec4>> titles, texts;
 			static ImVec4 bgcolor{}, border_color{};
-			static int duration{};
+			static float duration{};
 
 			imcxx::color::call(imcxx::color::edit{}, "Background color", bgcolor);
 			imcxx::color::call(imcxx::color::edit{}, "Border color", border_color);
-			ImGui::InputInt("Duration", &duration);
+			ImGui::InputFloat("Duration", &duration);
 
 
 			for (auto entry : std::array{
@@ -179,7 +179,7 @@ namespace imcxx::misc
 			{
 				imcxx::misc::notification::reg_info cur_config;
 
-				cur_config.Duration = static_cast<uint64_t>(duration);
+				cur_config.Duration = duration;
 				cur_config.BGColor = imcxx::misc::notification::color_to_u32(bgcolor);
 				cur_config.BorderColor = imcxx::misc::notification::color_to_u32(border_color);
 

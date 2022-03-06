@@ -16,7 +16,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] popup : public scope_wrap<popup>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<popup>;
 	public:
 		struct modal {};
 		struct context_item {};

@@ -10,7 +10,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] group : public scope_wrap<group, scope_traits::always_dtor, false>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<group, scope_traits::always_dtor, false>;
 	public:
 		group()
 		{
@@ -29,7 +29,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] indent : public scope_wrap<indent, scope_traits::has_dtor>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<indent, scope_traits::has_dtor>;
 	public:
 		indent(float indent_w = 0.f, bool enable = true) : 
 			scope_wrap(enable), m_Indent(indent_w)
@@ -51,7 +51,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] unindent : public scope_wrap<indent, scope_traits::has_dtor>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<indent, scope_traits::has_dtor>;
 	public:
 		unindent(float indent_w = 0.f, bool enable = true) :
 			scope_wrap(enable), m_Indent(indent_w)

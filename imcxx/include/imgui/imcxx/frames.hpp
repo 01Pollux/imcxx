@@ -9,7 +9,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] frame : public scope_wrap<frame, scope_traits::always_dtor, false>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<frame, scope_traits::always_dtor, false>;
 	public:
 		template<typename _PlatNewFrameFnTy, typename = std::enable_if_t<std::is_invocable_v<_PlatNewFrameFnTy>>>
 		frame(_PlatNewFrameFnTy plat_newframe)

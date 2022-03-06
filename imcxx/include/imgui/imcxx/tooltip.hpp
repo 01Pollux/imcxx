@@ -11,7 +11,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] tooltip : public scope_wrap<tooltip, scope_traits::always_dtor, false>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<tooltip, scope_traits::always_dtor, false>;
 	public:
 		struct ignore_previous {};
 

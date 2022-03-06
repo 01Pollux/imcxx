@@ -11,7 +11,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] combo_box : public scope_wrap<combo_box>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<combo_box>;
 	public:
 		combo_box(const char* label, const char* preview_value, ImGuiComboFlags flags = 0) :
 			scope_wrap(ImGui::BeginCombo(label, preview_value, flags))

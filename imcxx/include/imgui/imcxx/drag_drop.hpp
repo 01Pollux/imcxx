@@ -13,7 +13,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] drag_drop_source : public scope_wrap<drag_drop_source>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<drag_drop_source>;
 	public:
 		class item;
 
@@ -67,7 +67,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] drag_drop_target : public scope_wrap<drag_drop_target>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<drag_drop_target>;
 	public:
 		class item;
 

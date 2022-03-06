@@ -10,7 +10,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] tabbar : public scope_wrap<tabbar>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<tabbar>;
 	public:
 		class item;
 
@@ -57,7 +57,7 @@ namespace imcxx
 
 	class [[nodiscard]] tabbar::item : public scope_wrap<item>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<item>;
 	public:
 		template<typename _StrTy>
 		item(const _StrTy& label, bool* p_open = nullptr, ImGuiTabItemFlags flags = 0) :

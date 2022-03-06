@@ -33,7 +33,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] table : public scope_wrap<table>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<table>;
 	public:
 		class column;
 

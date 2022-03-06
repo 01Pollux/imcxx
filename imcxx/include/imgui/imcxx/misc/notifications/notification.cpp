@@ -13,7 +13,7 @@
 
 namespace imcxx::misc
 {
-#ifndef IMCXX_MISC_NOTIFICATION_NO_DEMO
+#ifndef IMCXX_MISC_NO_NOTIFICATION_DEMO
 	void render_notifications_demo();
 #endif
 
@@ -24,7 +24,7 @@ namespace imcxx::misc
 		std::vector<string_color> Title;
 		std::vector<string_color> Texts;
 
-		uint64_t Duration;
+        float Duration;
 
 		uint32_t Id;
 		uint32_t BGColor, BorderColor;
@@ -55,8 +55,8 @@ namespace imcxx::misc
 		std::vector<string_color> Title;
 		std::vector<string_color> Texts;
 
-		std::chrono::system_clock::time_point StartTime;
-		std::chrono::system_clock::time_point EndTime;
+        float TotalSeconds;
+        float SecondsRemaining;
 
 		uint32_t Id;
 		uint32_t BGColor, BorderColor;
@@ -66,14 +66,14 @@ namespace imcxx::misc
 
 		notification_info(
 			uint32_t id,
-			std::chrono::system_clock::time_point time_point,
+            float total_time,
 			notification::reg_info&& info
 		) noexcept :
 			Title(std::move(info.Title)),
 			Texts(std::move(info.Texts)),
 
-			StartTime(time_point),
-			EndTime(time_point + std::chrono::milliseconds(info.Duration)),
+            TotalSeconds(total_time),
+            SecondsRemaining(total_time),
 			Id(id),
 
 			BGColor(info.BGColor),
@@ -89,8 +89,8 @@ namespace imcxx::misc
 			Title(std::move(pending.Title)),
 			Texts(std::move(pending.Texts)),
 
-			StartTime(std::chrono::system_clock::now()),
-			EndTime(StartTime + std::chrono::milliseconds(pending.Duration)),
+            TotalSeconds(pending.Duration),
+            SecondsRemaining(pending.Duration),
 			Id(std::move(pending.Id)),
 
 			BGColor(pending.BGColor),
@@ -105,11 +105,11 @@ namespace imcxx::misc
 	static std::deque<pending_notification_info> _PendingNotifications;
 
 
-	static constexpr auto fade_in_cooldown = std::chrono::milliseconds(500);
-	static constexpr float fade_in_mult = 0.003f;
+	static constexpr auto fade_in_cooldown = 0.5f;
+	static constexpr float fade_in_mult = 2.5f;
 
-	static constexpr auto fade_out_cooldown = std::chrono::milliseconds(500);
-	static constexpr float fade_out_mult = 0.003f;
+	static constexpr auto fade_out_cooldown = 0.5f;
+	static constexpr float fade_out_mult = 1.f;
 
 	static constexpr size_t max_popups_in_window = 3;
 
@@ -181,20 +181,18 @@ namespace imcxx::misc
 
 	[[nodiscard]]
 	float get_opacity(
-		std::chrono::system_clock::time_point begin_time,
-		std::chrono::system_clock::time_point end_time,
-		std::chrono::system_clock::time_point cur_time
+        float total_time,
+        float time_left
 	)
 	{
 		using namespace std::chrono_literals;
-		auto time_left = end_time - cur_time;
 		if (time_left < fade_out_cooldown)
 		{
-			return ((end_time - cur_time) / 1ms) * fade_out_mult;
+            return time_left * fade_out_mult;
 		}
-		else if ((cur_time - begin_time) < fade_in_cooldown)
+		else if ((total_time - time_left) < fade_in_cooldown)
 		{
-			return ((cur_time - begin_time) / 1ms) * fade_in_mult;
+            return ((total_time - time_left)) * fade_in_mult;
 		}
 		else return 1.f;
 	}
@@ -202,18 +200,18 @@ namespace imcxx::misc
 
 	void notification::render()
 	{
-#ifndef IMCXX_NOTIFICATION_NO_DEMO
+#ifndef IMCXX_MISC_NO_NOTIFICATION_DEMO
 		render_notifications_demo();
 #endif
-		auto now = std::chrono::system_clock::now();
+        float delta_time = ImGui::GetIO().DeltaTime;
 
 		{
 			auto it = std::remove_if(
 				_Notifications.begin(),
 				_Notifications.end(),
-				[now](const auto& it)
+				[](const auto& it)
 				{
-					if (it.EndTime <= now)
+					if (it.SecondsRemaining <= 0.f)
 					{
 						if (it.OnEnd)
 							it.OnEnd(it.Id, false);
@@ -222,7 +220,8 @@ namespace imcxx::misc
 					else return false;
 				}
 			);
-			_Notifications.erase(it, _Notifications.end());
+            if (it != _Notifications.end())
+			    _Notifications.erase(it, _Notifications.end());
 
 			if (_PendingNotifications.size() && _Notifications.size() < max_popups_in_window)
 			{
@@ -242,7 +241,7 @@ namespace imcxx::misc
 		size_t num_rendered = 0;
 		for (auto notif = _Notifications.begin(); notif != _Notifications.end() && num_rendered < max_popups_in_window;)
 		{
-			ImGui::SetNextWindowBgAlpha(get_opacity(notif->StartTime, notif->EndTime, now));
+			ImGui::SetNextWindowBgAlpha(get_opacity(notif->TotalSeconds, notif->SecondsRemaining));
 			ImGui::SetNextWindowPos({ view_start_pos.x, view_start_pos.y }, ImGuiCond_Always, ImVec2(1.f, 1.f));
 			ImGui::SetNextWindowSize({ main_view->WorkSize.x / 3.2f, -FLT_MAX });
 
@@ -266,17 +265,18 @@ namespace imcxx::misc
 			);
 
 			bg_and_border.pop_all();
+            notif->SecondsRemaining -= delta_time;
 
 			if (notification)
 			{
 				using namespace std::chrono_literals;
 
-				if (ImGui::IsWindowHovered())
-					notif->EndTime += static_cast<size_t>(ImGui::GetIO().DeltaTime * 1600.f) * 1ms;
+                if (ImGui::IsWindowHovered())
+                    notif->SecondsRemaining += delta_time;
 
 				if (imcxx::popup close_popup{ imcxx::popup::context_window{}, "##NotificationPopup" })
 				{
-					notif->EndTime += static_cast<size_t>(ImGui::GetIO().DeltaTime * 1600.f) * 1ms;
+                    notif->SecondsRemaining += delta_time;
 					if (notif->OnRightClick)
 						notif->OnRightClick(notif->Id);
 					if (ImGui::Selectable("Close"))
@@ -291,7 +291,7 @@ namespace imcxx::misc
 					ImGui::TextUnformatted(title.string.c_str(), title.string.c_str() + title.string.size());
 				}
 
-				const float frac = static_cast<float>((notif->EndTime - now) / 1ms) / ((notif->EndTime - notif->StartTime) / 1ms);
+				const float frac = 1.f - ((notif->TotalSeconds - notif->SecondsRemaining) / notif->TotalSeconds);
 				ImGui::ProgressBar(frac, { -FLT_MIN, 2.f }, "");
 
 				if (!notif->Title.empty())
@@ -302,7 +302,7 @@ namespace imcxx::misc
 					imcxx::shared_color color(ImGuiCol_Text, text.color);
 					ImGui::TextUnformatted(text.string.c_str(), text.string.c_str() + text.string.size());
 				}
-			}
+            }
 
 			view_start_pos.y -= ImGui::GetWindowSize().y + 10.f;
 

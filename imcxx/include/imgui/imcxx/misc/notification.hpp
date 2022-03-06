@@ -72,7 +72,7 @@ namespace imcxx::misc
 		/// <summary>
 		/// notification's duration in milli-seconds
 		/// </summary>
-		uint64_t Duration;
+		float Duration;
 		/// <summary>
 		/// notification's background/foreground color
 		/// </summary>

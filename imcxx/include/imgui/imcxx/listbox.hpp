@@ -14,7 +14,7 @@ namespace imcxx
 	/// </summary>
 	class [[nodiscard]] list_box : public scope_wrap<list_box>
 	{
-		friend class scope_wrap;
+		friend class scope_wrap<list_box>;
 	public:
 		list_box(const char* label, ImVec2 size = {}) :
 			scope_wrap(ImGui::BeginListBox(label, size))
